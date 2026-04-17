@@ -1,0 +1,2470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java OOP & Collections — Master Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e2a;
+    --border: #252a38;
+    --accent: #7c6af7;
+    --accent2: #f7a84a;
+    --accent3: #4af7b0;
+    --accent4: #f74a6a;
+    --text: #e2e6f0;
+    --muted: #6b7394;
+    --code-bg: #0a0c12;
+    --keyword: #c792ea;
+    --string: #c3e88d;
+    --comment: #546e7a;
+    --number: #f78c6c;
+    --type: #82aaff;
+    --method: #7c6af7;
+    --annotation: #f7a84a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    padding: 0 0 40px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 10;
+  }
+  .sidebar-header h1 {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.3;
+  }
+  .sidebar-header p { font-size: 11px; color: var(--muted); margin-top: 4px; font-family: 'Space Mono', monospace; }
+  .nav-section { padding: 16px 24px 4px; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+  .nav-link {
+    display: block;
+    padding: 9px 24px 9px 28px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    border-left: 2px solid transparent;
+    transition: all .2s;
+    position: relative;
+  }
+  .nav-link:hover, .nav-link.active {
+    color: var(--text);
+    border-left-color: var(--accent);
+    background: linear-gradient(90deg, rgba(124,106,247,.1), transparent);
+  }
+  .nav-link .badge {
+    float: right;
+    font-size: 10px;
+    background: var(--surface2);
+    color: var(--muted);
+    padding: 1px 6px;
+    border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* MAIN */
+  #main {
+    flex: 1;
+    max-width: calc(100vw - 280px);
+    overflow-x: hidden;
+  }
+  .hero {
+    background: linear-gradient(135deg, #1a1435 0%, #0d1622 50%, #0d1422 100%);
+    padding: 60px 60px 50px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(124,106,247,.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent3);
+    background: rgba(74,247,176,.08);
+    border: 1px solid rgba(74,247,176,.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+  .hero h1 {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+  .hero h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { color: var(--muted); font-size: 16px; max-width: 560px; line-height: 1.6; }
+  .hero-stats { display: flex; gap: 32px; margin-top: 32px; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 28px; font-weight: 800; color: var(--accent2); font-family: 'Space Mono', monospace; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* CONTENT */
+  .content { padding: 40px 60px; }
+  .section { margin-bottom: 60px; }
+  .section-title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+    margin-bottom: 8px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title .icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent)aa);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .section-desc { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+
+  .concept-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: border-color .3s;
+  }
+  .concept-card:hover { border-color: var(--accent); }
+  .card-header {
+    padding: 20px 24px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .card-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .badge-oop { background: rgba(124,106,247,.15); color: var(--accent); border: 1px solid rgba(124,106,247,.3); }
+  .badge-coll { background: rgba(247,168,74,.15); color: var(--accent2); border: 1px solid rgba(247,168,74,.3); }
+  .badge-interview { background: rgba(247,74,106,.15); color: var(--accent4); border: 1px solid rgba(247,74,106,.3); }
+  .badge-algo { background: rgba(74,247,176,.15); color: var(--accent3); border: 1px solid rgba(74,247,176,.3); }
+  .card-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .card-desc { color: var(--muted); font-size: 13px; line-height: 1.5; }
+  .card-body { padding: 24px; }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .info-box {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .info-box-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .info-box-content { font-size: 13px; color: var(--text); line-height: 1.6; }
+  .info-box.full { grid-column: 1/-1; }
+  .info-box ul { padding-left: 16px; }
+  .info-box li { margin-bottom: 4px; }
+
+  .use-case-banner {
+    background: linear-gradient(135deg, rgba(74,247,176,.06), rgba(124,106,247,.06));
+    border: 1px solid rgba(74,247,176,.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .use-case-banner strong { color: var(--accent3); }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  .code-header {
+    background: var(--surface2);
+    padding: 10px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .code-header .dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; }
+  .dot.y { background: #febc2e; }
+  .dot.g { background: #28c840; }
+  .code-header .lang { color: var(--accent2); font-weight: 700; font-size: 11px; }
+  pre {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    tab-size: 2;
+  }
+  .kw { color: var(--keyword); }
+  .str { color: var(--string); }
+  .cmt { color: var(--comment); font-style: italic; }
+  .num { color: var(--number); }
+  .ty { color: var(--type); }
+  .mt { color: var(--method); }
+  .an { color: var(--annotation); }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    transition: all .2s;
+  }
+  .tab-btn.active, .tab-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* INTERVIEW */
+  .q-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .q-header {
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    user-select: none;
+    transition: background .2s;
+  }
+  .q-header:hover { background: var(--surface2); }
+  .q-num {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: white;
+  }
+  .q-text { flex: 1; font-size: 14px; font-weight: 600; }
+  .q-chevron { color: var(--muted); transition: transform .3s; font-size: 14px; }
+  .q-item.open .q-chevron { transform: rotate(180deg); }
+  .q-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .q-item.open .q-body { display: block; }
+  .q-answer { font-size: 13px; line-height: 1.7; color: var(--text); padding-top: 16px; }
+  .q-difficulty {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .diff-easy { background: rgba(74,247,176,.15); color: var(--accent3); }
+  .diff-med { background: rgba(247,168,74,.15); color: var(--accent2); }
+  .diff-hard { background: rgba(247,74,106,.15); color: var(--accent4); }
+
+  /* COMPLEXITY TABLE */
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12px; }
+  th { background: var(--surface2); padding: 10px 14px; text-align: left; font-weight: 700; color: var(--accent2); border: 1px solid var(--border); font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+  td { padding: 9px 14px; border: 1px solid var(--border); color: var(--text); }
+  tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+  .tc-good { color: var(--accent3); font-weight: 700; font-family: 'Space Mono', monospace; }
+  .tc-med { color: var(--accent2); font-weight: 700; font-family: 'Space Mono', monospace; }
+  .tc-bad { color: var(--accent4); font-weight: 700; font-family: 'Space Mono', monospace; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* SEARCH */
+  .search-wrap { padding: 12px 16px 16px; }
+  .search-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+
+  @media (max-width: 900px) {
+    #sidebar { display: none; }
+    #main { max-width: 100vw; }
+    .hero { padding: 32px 24px; }
+    .hero h1 { font-size: 30px; }
+    .content { padding: 24px; }
+    .info-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <h1>Java OOP & Collections</h1>
+    <p>// Master Notes</p>
+  </div>
+  <div class="search-wrap">
+    <input class="search-input" type="text" placeholder="Search topics..." id="searchInput">
+  </div>
+
+  <div class="nav-section">OOP Concepts</div>
+  <a href="#encapsulation" class="nav-link">Encapsulation</a>
+  <a href="#inheritance" class="nav-link">Inheritance</a>
+  <a href="#polymorphism" class="nav-link">Polymorphism</a>
+  <a href="#abstraction" class="nav-link">Abstraction</a>
+  <a href="#interface" class="nav-link">Interface</a>
+
+  <div class="nav-section">Collections</div>
+  <a href="#arraylist" class="nav-link">ArrayList <span class="badge">List</span></a>
+  <a href="#linkedlist" class="nav-link">LinkedList <span class="badge">List</span></a>
+  <a href="#stack" class="nav-link">Stack <span class="badge">Deque</span></a>
+  <a href="#queue" class="nav-link">Queue / PriorityQueue</a>
+  <a href="#hashmap" class="nav-link">HashMap <span class="badge">Map</span></a>
+  <a href="#treemap" class="nav-link">TreeMap <span class="badge">Map</span></a>
+  <a href="#linkedhashmap" class="nav-link">LinkedHashMap</a>
+  <a href="#hashset" class="nav-link">HashSet <span class="badge">Set</span></a>
+  <a href="#treeset" class="nav-link">TreeSet <span class="badge">Set</span></a>
+  <a href="#deque" class="nav-link">ArrayDeque</a>
+
+  <div class="nav-section">Advanced OOP</div>
+  <a href="#generic" class="nav-link">Generics</a>
+  <a href="#comparable" class="nav-link">Comparable & Comparator</a>
+  <a href="#iterator" class="nav-link">Iterator Pattern</a>
+  <a href="#design-patterns" class="nav-link">Design Patterns</a>
+
+  <div class="nav-section">Interview Prep</div>
+  <a href="#interview" class="nav-link">Top 50 Questions <span class="badge">🔥</span></a>
+  <a href="#complexity" class="nav-link">Complexity Cheatsheet</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+  <div class="hero">
+    <div class="hero-tag">☕ Java &nbsp;•&nbsp; OOP &nbsp;•&nbsp; Collections &nbsp;•&nbsp; Interview Ready</div>
+    <h1>Master Java<br><span>OOP & Collections</span></h1>
+    <p>Complete reference with implementation, real-world use cases, and the most asked interview questions — all in one place.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">5</div><div class="stat-label">OOP Pillars</div></div>
+      <div class="stat"><div class="stat-num">10</div><div class="stat-label">Collections</div></div>
+      <div class="stat"><div class="stat-num">50</div><div class="stat-label">Interview Q&A</div></div>
+      <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Code Snippets</div></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- =========== OOP SECTION =========== -->
+    <div class="section" id="oop-section">
+      <div class="section-title">
+        <div class="icon">🧱</div>
+        OOP Concepts
+      </div>
+      <p class="section-desc">Object-Oriented Programming organizes software around objects and data rather than logic and functions. Java is built on four core pillars.</p>
+
+      <!-- ENCAPSULATION -->
+      <div class="concept-card" id="encapsulation">
+        <div class="card-header">
+          <span class="card-badge badge-oop">OOP</span>
+          <div>
+            <div class="card-title">Encapsulation</div>
+            <div class="card-desc">Bundling data and methods that operate on the data within a single unit (class), and restricting direct access to internal state.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">📌 Key Idea</div>
+              <div class="info-box-content">Private fields + public getters/setters. The object controls how its data is accessed and modified.</div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">🎯 When to Use</div>
+              <div class="info-box-content">Always. Every class should hide its internal implementation details from the outside world.</div>
+            </div>
+            <div class="info-box full">
+              <div class="info-box-title">✅ Benefits</div>
+              <div class="info-box-content">
+                <ul>
+                  <li>Data hiding and security — prevents invalid state</li>
+                  <li>Flexibility — change internals without breaking external code</li>
+                  <li>Validation in setters — enforce business rules</li>
+                  <li>Easier maintenance and testing</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="use-case-banner">
+            <strong>🏦 Real Use Case:</strong> A <code>BankAccount</code> class hides its balance — you can't directly set <code>balance = -5000</code>. The <code>withdraw()</code> method validates before modifying, preventing corrupt state.
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+              <span class="lang">Encapsulation.java</span>
+            </div>
+<pre><span class="cmt">// ✅ Encapsulation Example — BankAccount</span>
+<span class="kw">public class</span> <span class="ty">BankAccount</span> {
+
+    <span class="cmt">// Private fields — hidden from outside</span>
+    <span class="kw">private</span> <span class="ty">String</span> owner;
+    <span class="kw">private</span> <span class="kw">double</span> balance;
+    <span class="kw">private</span> <span class="ty">String</span> accountNumber;
+
+    <span class="cmt">// Constructor</span>
+    <span class="kw">public</span> <span class="mt">BankAccount</span>(<span class="ty">String</span> owner, <span class="kw">double</span> initialDeposit) {
+        <span class="kw">this</span>.owner = owner;
+        <span class="kw">this</span>.balance = initialDeposit;
+        <span class="kw">this</span>.accountNumber = <span class="mt">generateAccountNo</span>();
+    }
+
+    <span class="cmt">// Getter — read-only access</span>
+    <span class="kw">public double</span> <span class="mt">getBalance</span>() { <span class="kw">return</span> balance; }
+    <span class="kw">public</span> <span class="ty">String</span> <span class="mt">getOwner</span>()   { <span class="kw">return</span> owner; }
+
+    <span class="cmt">// Controlled modification with validation</span>
+    <span class="kw">public void</span> <span class="mt">deposit</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount &lt;= <span class="num">0</span>) <span class="kw">throw new</span> <span class="ty">IllegalArgumentException</span>(<span class="str">"Amount must be positive"</span>);
+        balance += amount;
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Deposited: ₹"</span> + amount);
+    }
+
+    <span class="kw">public void</span> <span class="mt">withdraw</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount &gt; balance) <span class="kw">throw new</span> <span class="ty">IllegalStateException</span>(<span class="str">"Insufficient funds"</span>);
+        balance -= amount;
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Withdrawn: ₹"</span> + amount);
+    }
+
+    <span class="kw">private</span> <span class="ty">String</span> <span class="mt">generateAccountNo</span>() {
+        <span class="kw">return</span> <span class="str">"ACC"</span> + (<span class="kw">int</span>)(<span class="ty">Math</span>.<span class="mt">random</span>() * <span class="num">100000</span>);
+    }
+}
+
+<span class="cmt">// Usage</span>
+<span class="ty">BankAccount</span> acc = <span class="kw">new</span> <span class="ty">BankAccount</span>(<span class="str">"Rahul"</span>, <span class="num">5000</span>);
+acc.<span class="mt">deposit</span>(<span class="num">2000</span>);
+acc.<span class="mt">withdraw</span>(<span class="num">1000</span>);
+<span class="ty">System</span>.out.<span class="mt">println</span>(acc.<span class="mt">getBalance</span>()); <span class="cmt">// 6000.0</span>
+<span class="cmt">// acc.balance = -9999;  ❌ Compile Error — private!</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- INHERITANCE -->
+      <div class="concept-card" id="inheritance">
+        <div class="card-header">
+          <span class="card-badge badge-oop">OOP</span>
+          <div>
+            <div class="card-title">Inheritance</div>
+            <div class="card-desc">A mechanism where a child class acquires properties and behaviors of a parent class, enabling code reuse and hierarchical relationships.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">📌 Types</div>
+              <div class="info-box-content">Single, Multilevel, Hierarchical. Java does NOT support Multiple Inheritance with classes (use interfaces instead).</div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">🔑 Keywords</div>
+              <div class="info-box-content"><code>extends</code> for class inheritance, <code>super</code> to call parent methods/constructor, <code>final</code> to prevent inheritance.</div>
+            </div>
+            <div class="info-box full">
+              <div class="info-box-title">🎯 Real Use Case</div>
+              <div class="info-box-content">Employee hierarchy: <code>Employee → Manager → Director</code>. Common behavior (name, salary) in parent; specialized behavior (teamSize, budget) in child. Avoids duplicating code across every role.</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+              <span class="lang">Inheritance.java</span>
+            </div>
+<pre><span class="cmt">// ✅ Inheritance — Employee Hierarchy</span>
+
+<span class="cmt">// Parent (Base) Class</span>
+<span class="kw">public class</span> <span class="ty">Employee</span> {
+    <span class="kw">protected</span> <span class="ty">String</span> name;
+    <span class="kw">protected double</span> baseSalary;
+
+    <span class="kw">public</span> <span class="mt">Employee</span>(<span class="ty">String</span> name, <span class="kw">double</span> salary) {
+        <span class="kw">this</span>.name = name;
+        <span class="kw">this</span>.baseSalary = salary;
+    }
+
+    <span class="kw">public double</span> <span class="mt">calculatePay</span>() { <span class="kw">return</span> baseSalary; }
+
+    <span class="kw">public void</span> <span class="mt">displayInfo</span>() {
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Name: "</span> + name + <span class="str">" | Pay: ₹"</span> + <span class="mt">calculatePay</span>());
+    }
+}
+
+<span class="cmt">// Child Class — inherits Employee</span>
+<span class="kw">public class</span> <span class="ty">Manager</span> <span class="kw">extends</span> <span class="ty">Employee</span> {
+    <span class="kw">private int</span> teamSize;
+
+    <span class="kw">public</span> <span class="mt">Manager</span>(<span class="ty">String</span> name, <span class="kw">double</span> salary, <span class="kw">int</span> teamSize) {
+        <span class="kw">super</span>(name, salary); <span class="cmt">// calls parent constructor</span>
+        <span class="kw">this</span>.teamSize = teamSize;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public double</span> <span class="mt">calculatePay</span>() {
+        <span class="kw">return</span> baseSalary + (teamSize * <span class="num">500</span>); <span class="cmt">// team bonus</span>
+    }
+}
+
+<span class="cmt">// Grandchild — Multilevel Inheritance</span>
+<span class="kw">public class</span> <span class="ty">Director</span> <span class="kw">extends</span> <span class="ty">Manager</span> {
+    <span class="kw">private double</span> annualBonus;
+
+    <span class="kw">public</span> <span class="mt">Director</span>(<span class="ty">String</span> name, <span class="kw">double</span> salary, <span class="kw">int</span> teamSize, <span class="kw">double</span> bonus) {
+        <span class="kw">super</span>(name, salary, teamSize);
+        <span class="kw">this</span>.annualBonus = bonus;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public double</span> <span class="mt">calculatePay</span>() {
+        <span class="kw">return super</span>.<span class="mt">calculatePay</span>() + (annualBonus / <span class="num">12</span>);
+    }
+}
+
+<span class="cmt">// Usage</span>
+<span class="ty">Employee</span> emp  = <span class="kw">new</span> <span class="ty">Employee</span>(<span class="str">"Priya"</span>,  <span class="num">50000</span>);
+<span class="ty">Manager</span>  mgr  = <span class="kw">new</span> <span class="ty">Manager</span>(<span class="str">"Arjun"</span>,   <span class="num">80000</span>, <span class="num">10</span>);
+<span class="ty">Director</span> dir  = <span class="kw">new</span> <span class="ty">Director</span>(<span class="str">"Ananya"</span>, <span class="num">120000</span>, <span class="num">30</span>, <span class="num">240000</span>);
+
+emp.<span class="mt">displayInfo</span>();  <span class="cmt">// Name: Priya | Pay: ₹50000.0</span>
+mgr.<span class="mt">displayInfo</span>();  <span class="cmt">// Name: Arjun | Pay: ₹85000.0</span>
+dir.<span class="mt">displayInfo</span>();  <span class="cmt">// Name: Ananya | Pay: ₹155000.0</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- POLYMORPHISM -->
+      <div class="concept-card" id="polymorphism">
+        <div class="card-header">
+          <span class="card-badge badge-oop">OOP</span>
+          <div>
+            <div class="card-title">Polymorphism</div>
+            <div class="card-desc">"Many forms" — one interface, multiple implementations. Allows objects of different types to be treated uniformly.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(this, 'poly-ct')">Compile-Time (Overloading)</button>
+            <button class="tab-btn" onclick="switchTab(this, 'poly-rt')">Runtime (Overriding)</button>
+          </div>
+          <div id="poly-ct" class="tab-pane active">
+            <div class="use-case-banner">
+              <strong>📐 Compile-Time Polymorphism (Static Dispatch):</strong> Same method name, different parameter signatures. Resolved at compile time. Use when one operation applies to multiple data types.
+            </div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Overloading.java</span></div>
+<pre><span class="kw">public class</span> <span class="ty">Calculator</span> {
+
+    <span class="cmt">// Same name, different parameters</span>
+    <span class="kw">public int</span> <span class="mt">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b)             { <span class="kw">return</span> a + b; }
+    <span class="kw">public double</span> <span class="mt">add</span>(<span class="kw">double</span> a, <span class="kw">double</span> b)    { <span class="kw">return</span> a + b; }
+    <span class="kw">public</span> <span class="ty">String</span> <span class="mt">add</span>(<span class="ty">String</span> a, <span class="ty">String</span> b)    { <span class="kw">return</span> a + b; }
+    <span class="kw">public int</span> <span class="mt">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b, <span class="kw">int</span> c)       { <span class="kw">return</span> a + b + c; }
+}
+
+<span class="ty">Calculator</span> calc = <span class="kw">new</span> <span class="ty">Calculator</span>();
+calc.<span class="mt">add</span>(<span class="num">2</span>, <span class="num">3</span>);            <span class="cmt">// → 5 (int)</span>
+calc.<span class="mt">add</span>(<span class="num">2.5</span>, <span class="num">3.5</span>);        <span class="cmt">// → 6.0 (double)</span>
+calc.<span class="mt">add</span>(<span class="str">"Hello"</span>, <span class="str">" World"</span>); <span class="cmt">// → "Hello World" (String)</span></pre>
+            </div>
+          </div>
+          <div id="poly-rt" class="tab-pane">
+            <div class="use-case-banner">
+              <strong>⚡ Runtime Polymorphism (Dynamic Dispatch):</strong> Overriding parent method in child. The actual method called is determined at runtime based on object type — not reference type. Core of the <em>Open/Closed Principle</em>.
+            </div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">RuntimePolymorphism.java</span></div>
+<pre><span class="cmt">// Shape hierarchy — real-world polymorphism</span>
+<span class="kw">abstract class</span> <span class="ty">Shape</span> {
+    <span class="kw">abstract double</span> <span class="mt">area</span>();
+    <span class="kw">void</span> <span class="mt">print</span>() { <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Area = "</span> + <span class="mt">area</span>()); }
+}
+
+<span class="kw">class</span> <span class="ty">Circle</span> <span class="kw">extends</span> <span class="ty">Shape</span> {
+    <span class="kw">double</span> r;
+    <span class="mt">Circle</span>(<span class="kw">double</span> r) { <span class="kw">this</span>.r = r; }
+    <span class="an">@Override</span> <span class="kw">double</span> <span class="mt">area</span>() { <span class="kw">return</span> <span class="ty">Math</span>.PI * r * r; }
+}
+
+<span class="kw">class</span> <span class="ty">Rectangle</span> <span class="kw">extends</span> <span class="ty">Shape</span> {
+    <span class="kw">double</span> w, h;
+    <span class="mt">Rectangle</span>(<span class="kw">double</span> w, <span class="kw">double</span> h) { <span class="kw">this</span>.w = w; <span class="kw">this</span>.h = h; }
+    <span class="an">@Override</span> <span class="kw">double</span> <span class="mt">area</span>() { <span class="kw">return</span> w * h; }
+}
+
+<span class="kw">class</span> <span class="ty">Triangle</span> <span class="kw">extends</span> <span class="ty">Shape</span> {
+    <span class="kw">double</span> b, ht;
+    <span class="mt">Triangle</span>(<span class="kw">double</span> b, <span class="kw">double</span> h) { <span class="kw">this</span>.b = b; <span class="kw">this</span>.ht = h; }
+    <span class="an">@Override</span> <span class="kw">double</span> <span class="mt">area</span>() { <span class="kw">return</span> <span class="num">0.5</span> * b * ht; }
+}
+
+<span class="cmt">// Power of polymorphism — same code works for ALL shapes</span>
+<span class="ty">List</span>&lt;<span class="ty">Shape</span>&gt; shapes = <span class="ty">Arrays</span>.<span class="mt">asList</span>(
+    <span class="kw">new</span> <span class="ty">Circle</span>(<span class="num">5</span>),
+    <span class="kw">new</span> <span class="ty">Rectangle</span>(<span class="num">4</span>, <span class="num">6</span>),
+    <span class="kw">new</span> <span class="ty">Triangle</span>(<span class="num">3</span>, <span class="num">8</span>)
+);
+
+<span class="kw">for</span> (<span class="ty">Shape</span> s : shapes) {
+    s.<span class="mt">print</span>(); <span class="cmt">// Each calls its OWN area() at runtime</span>
+}
+<span class="cmt">// Area = 78.54, Area = 24.0, Area = 12.0</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABSTRACTION -->
+      <div class="concept-card" id="abstraction">
+        <div class="card-header">
+          <span class="card-badge badge-oop">OOP</span>
+          <div>
+            <div class="card-title">Abstraction</div>
+            <div class="card-desc">Hiding implementation complexity and showing only essential features. Achieved via abstract classes and interfaces.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">Abstract Class vs Interface</div>
+              <div class="info-box-content">
+                <strong style="color:var(--accent)">Abstract Class:</strong> partial implementation, has constructors, can have state.<br><br>
+                <strong style="color:var(--accent2)">Interface:</strong> pure contract, no state (before Java 8), multiple can be implemented.
+              </div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">🎯 Real Use Case</div>
+              <div class="info-box-content">A payment gateway: you call <code>pay(amount)</code> without knowing whether it's UPI, card, or net banking underneath. The details are abstracted away.</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Abstraction.java</span></div>
+<pre><span class="cmt">// ✅ Abstraction — Payment Gateway</span>
+
+<span class="cmt">// Abstract class — defines template</span>
+<span class="kw">abstract class</span> <span class="ty">PaymentProcessor</span> {
+    <span class="kw">private</span> <span class="ty">String</span> transactionId;
+
+    <span class="cmt">// Abstract — subclass MUST implement</span>
+    <span class="kw">public abstract boolean</span> <span class="mt">processPayment</span>(<span class="kw">double</span> amount);
+    <span class="kw">public abstract</span> <span class="ty">String</span> <span class="mt">getPaymentMode</span>();
+
+    <span class="cmt">// Concrete — shared behavior</span>
+    <span class="kw">public void</span> <span class="mt">pay</span>(<span class="kw">double</span> amount) {
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Initiating "</span> + <span class="mt">getPaymentMode</span>() + <span class="str">" payment..."</span>);
+        <span class="kw">boolean</span> success = <span class="mt">processPayment</span>(amount);
+        <span class="ty">System</span>.out.<span class="mt">println</span>(success ? <span class="str">"✅ Success: ₹"</span> + amount : <span class="str">"❌ Failed"</span>);
+    }
+}
+
+<span class="kw">class</span> <span class="ty">UpiPayment</span> <span class="kw">extends</span> <span class="ty">PaymentProcessor</span> {
+    <span class="kw">private</span> <span class="ty">String</span> upiId;
+    <span class="mt">UpiPayment</span>(<span class="ty">String</span> upiId) { <span class="kw">this</span>.upiId = upiId; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="mt">processPayment</span>(<span class="kw">double</span> amount) {
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Deducting via UPI: "</span> + upiId);
+        <span class="kw">return true</span>; <span class="cmt">// simulate success</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="ty">String</span> <span class="mt">getPaymentMode</span>() { <span class="kw">return</span> <span class="str">"UPI"</span>; }
+}
+
+<span class="kw">class</span> <span class="ty">CardPayment</span> <span class="kw">extends</span> <span class="ty">PaymentProcessor</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="mt">processPayment</span>(<span class="kw">double</span> amount) {
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Charging credit card..."</span>);
+        <span class="kw">return</span> amount &lt; <span class="num">100000</span>;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="ty">String</span> <span class="mt">getPaymentMode</span>() { <span class="kw">return</span> <span class="str">"Credit Card"</span>; }
+}
+
+<span class="cmt">// Client code — doesn't care HOW payment works</span>
+<span class="ty">PaymentProcessor</span> p1 = <span class="kw">new</span> <span class="ty">UpiPayment</span>(<span class="str">"rahul@ok"</span>);
+<span class="ty">PaymentProcessor</span> p2 = <span class="kw">new</span> <span class="ty">CardPayment</span>();
+p1.<span class="mt">pay</span>(<span class="num">500</span>);
+p2.<span class="mt">pay</span>(<span class="num">2000</span>);</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERFACE -->
+      <div class="concept-card" id="interface">
+        <div class="card-header">
+          <span class="card-badge badge-oop">OOP</span>
+          <div>
+            <div class="card-title">Interface & Multiple Inheritance</div>
+            <div class="card-desc">Defines a contract that implementing classes must fulfill. Java allows a class to implement multiple interfaces — solving the diamond problem.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">Java 8+ Features</div>
+              <div class="info-box-content"><code>default</code> methods (body in interface), <code>static</code> methods, <code>private</code> methods (Java 9+). Functional interfaces with <code>@FunctionalInterface</code>.</div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">🎯 Use Case</div>
+              <div class="info-box-content">A <code>Robot</code> can be <code>Flyable</code>, <code>Swimmable</code>, and <code>Chargeable</code> — implement multiple interfaces. Classes can't extend multiple parents.</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Interface.java</span></div>
+<pre><span class="cmt">// ✅ Interfaces — Vehicle capabilities</span>
+
+<span class="kw">interface</span> <span class="ty">Drivable</span> {
+    <span class="kw">void</span> <span class="mt">drive</span>();
+    <span class="kw">default void</span> <span class="mt">start</span>() { <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Engine started"</span>); }
+}
+
+<span class="kw">interface</span> <span class="ty">Electric</span> {
+    <span class="kw">int</span> <span class="mt">getBatteryLevel</span>();
+    <span class="kw">void</span> <span class="mt">charge</span>();
+}
+
+<span class="kw">interface</span> <span class="ty">Autonomous</span> {
+    <span class="kw">void</span> <span class="mt">selfDrive</span>(<span class="ty">String</span> destination);
+}
+
+<span class="cmt">// One class, multiple interfaces</span>
+<span class="kw">class</span> <span class="ty">TeslaCar</span> <span class="kw">implements</span> <span class="ty">Drivable</span>, <span class="ty">Electric</span>, <span class="ty">Autonomous</span> {
+    <span class="kw">private int</span> battery = <span class="num">80</span>;
+
+    <span class="an">@Override</span> <span class="kw">public void</span> <span class="mt">drive</span>() {
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Tesla driving silently 🚗"</span>);
+    }
+
+    <span class="an">@Override</span> <span class="kw">public int</span> <span class="mt">getBatteryLevel</span>() { <span class="kw">return</span> battery; }
+
+    <span class="an">@Override</span> <span class="kw">public void</span> <span class="mt">charge</span>() {
+        battery = <span class="num">100</span>;
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Battery charged to 100% ⚡"</span>);
+    }
+
+    <span class="an">@Override</span> <span class="kw">public void</span> <span class="mt">selfDrive</span>(<span class="ty">String</span> dest) {
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Autopilot: navigating to "</span> + dest);
+    }
+}
+
+<span class="cmt">// Functional Interface with Lambda</span>
+<span class="an">@FunctionalInterface</span>
+<span class="kw">interface</span> <span class="ty">Transformer</span>&lt;<span class="ty">T</span>, <span class="ty">R</span>&gt; {
+    <span class="ty">R</span> <span class="mt">transform</span>(<span class="ty">T</span> input);
+}
+
+<span class="ty">Transformer</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; len = s -> s.<span class="mt">length</span>();
+<span class="ty">System</span>.out.<span class="mt">println</span>(len.<span class="mt">transform</span>(<span class="str">"Hello"</span>)); <span class="cmt">// 5</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========== COLLECTIONS =========== -->
+    <div class="section" id="collections-section">
+      <div class="section-title">
+        <div class="icon" style="background:linear-gradient(135deg,var(--accent2),#f7684a)">📦</div>
+        Java Collections Framework
+      </div>
+      <p class="section-desc">The Java Collections Framework provides a unified architecture for storing, manipulating groups of objects. Choose the right collection for the right problem.</p>
+
+      <!-- ARRAYLIST -->
+      <div class="concept-card" id="arraylist">
+        <div class="card-header">
+          <span class="card-badge badge-coll">List</span>
+          <div>
+            <div class="card-title">ArrayList</div>
+            <div class="card-desc">Dynamic array implementation. Backed by an array that auto-resizes. Best for random access by index. NOT thread-safe.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">⏱ Complexity</div>
+              <div class="info-box-content">
+                Get: <span class="tc-good">O(1)</span> &nbsp;|&nbsp; Add end: <span class="tc-good">O(1)*</span><br>
+                Add mid: <span class="tc-bad">O(n)</span> &nbsp;|&nbsp; Remove: <span class="tc-bad">O(n)</span><br>
+                Search: <span class="tc-bad">O(n)</span>
+              </div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">✅ Use When</div>
+              <div class="info-box-content">Frequent reads/random access, append-heavy, ordered list with index lookup — e.g. paginated product list, command history.</div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">❌ Avoid When</div>
+              <div class="info-box-content">Frequent insertions/deletions in the middle. Use <strong>LinkedList</strong> or <strong>ArrayDeque</strong> instead.</div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">🔗 Thread-Safe Alternative</div>
+              <div class="info-box-content"><code>CopyOnWriteArrayList</code> (java.util.concurrent) — safe for multi-threaded reads.</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">ArrayList.java</span></div>
+<pre><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.stream.*;
+
+<span class="cmt">// ✅ ArrayList — Shopping Cart</span>
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; cart = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+
+<span class="cmt">// CRUD Operations</span>
+cart.<span class="mt">add</span>(<span class="str">"Apple"</span>);
+cart.<span class="mt">add</span>(<span class="str">"Mango"</span>);
+cart.<span class="mt">add</span>(<span class="str">"Banana"</span>);
+cart.<span class="mt">add</span>(<span class="num">1</span>, <span class="str">"Orange"</span>);        <span class="cmt">// insert at index 1</span>
+cart.<span class="mt">remove</span>(<span class="str">"Banana"</span>);         <span class="cmt">// remove by value</span>
+cart.<span class="mt">remove</span>(<span class="num">0</span>);                 <span class="cmt">// remove by index</span>
+<span class="ty">String</span> item = cart.<span class="mt">get</span>(<span class="num">0</span>);      <span class="cmt">// O(1) random access</span>
+cart.<span class="mt">set</span>(<span class="num">0</span>, <span class="str">"Papaya"</span>);           <span class="cmt">// update</span>
+
+<span class="cmt">// Sorting</span>
+<span class="ty">Collections</span>.<span class="mt">sort</span>(cart);
+cart.<span class="mt">sort</span>(<span class="ty">Comparator</span>.<span class="mt">naturalOrder</span>());
+
+<span class="cmt">// Iteration (3 ways)</span>
+<span class="kw">for</span> (<span class="ty">String</span> s : cart) { <span class="ty">System</span>.out.<span class="mt">println</span>(s); }
+cart.<span class="mt">forEach</span>(<span class="ty">System</span>.out::<span class="mt">println</span>);
+cart.<span class="mt">listIterator</span>().<span class="mt">forEachRemaining</span>(<span class="ty">System</span>.out::<span class="mt">println</span>);
+
+<span class="cmt">// Stream operations</span>
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; filtered = cart.<span class="mt">stream</span>()
+    .<span class="mt">filter</span>(s -> s.<span class="mt">startsWith</span>(<span class="str">"A"</span>))
+    .<span class="mt">map</span>(<span class="ty">String</span>::<span class="mt">toUpperCase</span>)
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">toList</span>());
+
+<span class="cmt">// Useful methods</span>
+cart.<span class="mt">contains</span>(<span class="str">"Mango"</span>);      <span class="cmt">// true</span>
+cart.<span class="mt">indexOf</span>(<span class="str">"Orange"</span>);     <span class="cmt">// index or -1</span>
+cart.<span class="mt">size</span>();               <span class="cmt">// count</span>
+cart.<span class="mt">isEmpty</span>();            <span class="cmt">// false</span>
+cart.<span class="mt">subList</span>(<span class="num">0</span>, <span class="num">2</span>);        <span class="cmt">// sub-view [0,2)</span>
+<span class="ty">Collections</span>.<span class="mt">shuffle</span>(cart); <span class="cmt">// random order</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- LINKEDLIST -->
+      <div class="concept-card" id="linkedlist">
+        <div class="card-header">
+          <span class="card-badge badge-coll">List / Deque</span>
+          <div>
+            <div class="card-title">LinkedList</div>
+            <div class="card-desc">Doubly-linked list. Implements both List and Deque. Fast insertion/deletion at ends. Implements Queue operations natively.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">⏱ Complexity</div>
+              <div class="info-box-content">
+                Get: <span class="tc-bad">O(n)</span> &nbsp;|&nbsp; Add/Remove head: <span class="tc-good">O(1)</span><br>
+                Add/Remove tail: <span class="tc-good">O(1)</span> &nbsp;|&nbsp; Insert mid: <span class="tc-med">O(n)*</span>
+              </div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">✅ Use When</div>
+              <div class="info-box-content">Frequent add/remove from both ends, implementing Stack, Queue, or Deque — e.g. undo/redo, browser history, task scheduler.</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">LinkedList.java</span></div>
+<pre><span class="cmt">// ✅ LinkedList — Task Queue / Undo-Redo</span>
+<span class="ty">LinkedList</span>&lt;<span class="ty">String</span>&gt; history = <span class="kw">new</span> <span class="ty">LinkedList</span>&lt;&gt;();
+
+<span class="cmt">// Stack-like (LIFO)</span>
+history.<span class="mt">push</span>(<span class="str">"Action1"</span>);  <span class="cmt">// addFirst</span>
+history.<span class="mt">push</span>(<span class="str">"Action2"</span>);
+<span class="ty">String</span> last = history.<span class="mt">pop</span>(); <span class="cmt">// removeFirst → "Action2"</span>
+
+<span class="cmt">// Queue-like (FIFO)</span>
+history.<span class="mt">offer</span>(<span class="str">"Task1"</span>);  <span class="cmt">// addLast</span>
+history.<span class="mt">offer</span>(<span class="str">"Task2"</span>);
+<span class="ty">String</span> next = history.<span class="mt">poll</span>(); <span class="cmt">// removeFirst → "Task1"</span>
+
+<span class="cmt">// Deque operations</span>
+history.<span class="mt">addFirst</span>(<span class="str">"Front"</span>);
+history.<span class="mt">addLast</span>(<span class="str">"Back"</span>);
+history.<span class="mt">peekFirst</span>(); <span class="cmt">// view without removing</span>
+history.<span class="mt">peekLast</span>();
+
+<span class="cmt">// ✅ Custom LinkedList implementation (manual)</span>
+<span class="kw">class</span> <span class="ty">Node</span>&lt;<span class="ty">T</span>&gt; {
+    <span class="ty">T</span> data;
+    <span class="ty">Node</span>&lt;<span class="ty">T</span>&gt; next, prev;
+    <span class="mt">Node</span>(<span class="ty">T</span> data) { <span class="kw">this</span>.data = data; }
+}
+
+<span class="kw">class</span> <span class="ty">MyLinkedList</span>&lt;<span class="ty">T</span>&gt; {
+    <span class="ty">Node</span>&lt;<span class="ty">T</span>&gt; head, tail;
+    <span class="kw">int</span> size;
+
+    <span class="kw">void</span> <span class="mt">addLast</span>(<span class="ty">T</span> val) {
+        <span class="ty">Node</span>&lt;<span class="ty">T</span>&gt; n = <span class="kw">new</span> <span class="ty">Node</span>&lt;&gt;(val);
+        <span class="kw">if</span> (tail != <span class="kw">null</span>) { tail.next = n; n.prev = tail; }
+        <span class="kw">else</span> head = n;
+        tail = n; size++;
+    }
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- STACK -->
+      <div class="concept-card" id="stack">
+        <div class="card-header">
+          <span class="card-badge badge-coll">Deque</span>
+          <div>
+            <div class="card-title">Stack (ArrayDeque preferred)</div>
+            <div class="card-desc">LIFO — Last In, First Out. Java's legacy <code>Stack</code> class is thread-safe but slow. Use <code>ArrayDeque</code> as a stack in modern code.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="use-case-banner">
+            <strong>🔄 Classic Stack Use Cases:</strong> Parsing expressions (balanced brackets), function call stack (recursion), undo/redo, DFS graph traversal, backtracking problems.
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Stack.java</span></div>
+<pre><span class="cmt">// ✅ Stack — Balanced Brackets Checker</span>
+<span class="kw">import</span> java.util.*;
+
+<span class="kw">public boolean</span> <span class="mt">isBalanced</span>(<span class="ty">String</span> s) {
+    <span class="ty">Deque</span>&lt;<span class="ty">Character</span>&gt; stack = <span class="kw">new</span> <span class="ty">ArrayDeque</span>&lt;&gt;(); <span class="cmt">// preferred over Stack</span>
+    <span class="kw">for</span> (<span class="kw">char</span> c : s.<span class="mt">toCharArray</span>()) {
+        <span class="kw">if</span> (<span class="str">"([{"</span>.<span class="mt">indexOf</span>(c) != -<span class="num">1</span>)
+            stack.<span class="mt">push</span>(c);
+        <span class="kw">else if</span> (<span class="str">")]}"</span>.<span class="mt">indexOf</span>(c) != -<span class="num">1</span>) {
+            <span class="kw">if</span> (stack.<span class="mt">isEmpty</span>()) <span class="kw">return false</span>;
+            <span class="kw">char</span> top = stack.<span class="mt">pop</span>();
+            <span class="kw">if</span> ((c == <span class="str">')'</span> && top != <span class="str">'('</span>) ||
+                (c == <span class="str">']'</span> && top != <span class="str">'['</span>) ||
+                (c == <span class="str">'}'</span> && top != <span class="str">'{'</span>)) <span class="kw">return false</span>;
+        }
+    }
+    <span class="kw">return</span> stack.<span class="mt">isEmpty</span>();
+}
+
+<span class="mt">isBalanced</span>(<span class="str">"{[()]}"</span>); <span class="cmt">// true</span>
+<span class="mt">isBalanced</span>(<span class="str">"{[(]}"</span>);  <span class="cmt">// false</span>
+
+<span class="cmt">// All Stack operations with ArrayDeque</span>
+<span class="ty">Deque</span>&lt;<span class="ty">Integer</span>&gt; stack = <span class="kw">new</span> <span class="ty">ArrayDeque</span>&lt;&gt;();
+stack.<span class="mt">push</span>(<span class="num">10</span>);    <span class="cmt">// O(1)</span>
+stack.<span class="mt">push</span>(<span class="num">20</span>);
+stack.<span class="mt">peek</span>();     <span class="cmt">// 20 — view top, don't remove</span>
+stack.<span class="mt">pop</span>();      <span class="cmt">// 20 — remove top</span>
+stack.<span class="mt">isEmpty</span>(); <span class="cmt">// false</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUEUE -->
+      <div class="concept-card" id="queue">
+        <div class="card-header">
+          <span class="card-badge badge-coll">Queue</span>
+          <div>
+            <div class="card-title">Queue & PriorityQueue</div>
+            <div class="card-desc">FIFO — First In, First Out. PriorityQueue orders elements by priority (natural order or custom Comparator), backed by a min-heap.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">Queue Methods</div>
+              <div class="info-box-content">
+                <code>offer()</code> — add (no exception)<br>
+                <code>poll()</code> — remove head (null if empty)<br>
+                <code>peek()</code> — view head (null if empty)<br>
+                <code>add()/remove()/element()</code> — throw exceptions
+              </div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">🎯 Use Cases</div>
+              <div class="info-box-content">
+                <strong>Queue:</strong> Print spooler, BFS traversal, task scheduling, rate limiting<br><br>
+                <strong>PriorityQueue:</strong> Dijkstra's algorithm, hospital triage, job scheduling by priority
+              </div>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Queue.java</span></div>
+<pre><span class="cmt">// ✅ Queue — BFS + Task Scheduling</span>
+<span class="ty">Queue</span>&lt;<span class="ty">String</span>&gt; queue = <span class="kw">new</span> <span class="ty">LinkedList</span>&lt;&gt;();
+queue.<span class="mt">offer</span>(<span class="str">"Task A"</span>);
+queue.<span class="mt">offer</span>(<span class="str">"Task B"</span>);
+queue.<span class="mt">offer</span>(<span class="str">"Task C"</span>);
+<span class="kw">while</span> (!queue.<span class="mt">isEmpty</span>()) {
+    <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Processing: "</span> + queue.<span class="mt">poll</span>());
+}
+
+<span class="cmt">// ✅ PriorityQueue — Hospital Triage (min by urgency)</span>
+<span class="ty">PriorityQueue</span>&lt;<span class="ty">int[]</span>&gt; pq = <span class="kw">new</span> <span class="ty">PriorityQueue</span>&lt;&gt;(
+    (<span class="ty">a</span>, <span class="ty">b</span>) -> <span class="ty">a</span>[<span class="num">1</span>] - <span class="ty">b</span>[<span class="num">1</span>] <span class="cmt">// sort by urgency level asc</span>
+);
+pq.<span class="mt">offer</span>(<span class="kw">new int</span>[] {<span class="num">1</span>, <span class="num">3</span>}); <span class="cmt">// Patient 1, urgency 3</span>
+pq.<span class="mt">offer</span>(<span class="kw">new int</span>[] {<span class="num">2</span>, <span class="num">1</span>}); <span class="cmt">// Patient 2, urgency 1 (CRITICAL)</span>
+pq.<span class="mt">offer</span>(<span class="kw">new int</span>[] {<span class="num">3</span>, <span class="num">2</span>}); <span class="cmt">// Patient 3, urgency 2</span>
+
+<span class="kw">while</span> (!pq.<span class="mt">isEmpty</span>()) {
+    <span class="kw">int</span>[] p = pq.<span class="mt">poll</span>();
+    <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"Treating Patient "</span> + p[<span class="num">0</span>] + <span class="str">" urgency="</span> + p[<span class="num">1</span>]);
+}
+<span class="cmt">// Patient 2 (urgency 1) → Patient 3 (2) → Patient 1 (3)</span>
+
+<span class="cmt">// Max-Heap (reverse order)</span>
+<span class="ty">PriorityQueue</span>&lt;<span class="ty">Integer</span>&gt; maxHeap = <span class="kw">new</span> <span class="ty">PriorityQueue</span>&lt;&gt;(<span class="ty">Collections</span>.<span class="mt">reverseOrder</span>());
+maxHeap.<span class="mt">offer</span>(<span class="num">5</span>); maxHeap.<span class="mt">offer</span>(<span class="num">1</span>); maxHeap.<span class="mt">offer</span>(<span class="num">9</span>);
+maxHeap.<span class="mt">poll</span>(); <span class="cmt">// → 9 (max first)</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- HASHMAP -->
+      <div class="concept-card" id="hashmap">
+        <div class="card-header">
+          <span class="card-badge badge-coll">Map</span>
+          <div>
+            <div class="card-title">HashMap</div>
+            <div class="card-desc">Key-value pairs backed by a hash table. O(1) average for get/put. No ordering guarantee. Keys must be unique. NOT thread-safe.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">⏱ Complexity</div>
+              <div class="info-box-content">
+                Get/Put/Remove: <span class="tc-good">O(1)</span> avg, <span class="tc-bad">O(n)</span> worst<br>
+                Contains key: <span class="tc-good">O(1)</span> &nbsp;|&nbsp; Iteration: <span class="tc-bad">O(n)</span>
+              </div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">🎯 Use When</div>
+              <div class="info-box-content">Frequency counting, caching, lookup tables, indexing, grouping — e.g. word count, user sessions, memoization.</div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">⚙️ Internals</div>
+              <div class="info-box-content">Array of buckets (default 16). Uses <code>hashCode()</code> + <code>equals()</code>. Collision resolution via chaining. Resizes at 75% load factor.</div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">🔒 Thread-Safe</div>
+              <div class="info-box-content">Use <code>ConcurrentHashMap</code> for multi-threaded, <code>Hashtable</code> (legacy/slower).</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">HashMap.java</span></div>
+<pre><span class="cmt">// ✅ HashMap — Word Frequency Counter</span>
+<span class="ty">String</span>[] words = {<span class="str">"apple"</span>, <span class="str">"banana"</span>, <span class="str">"apple"</span>, <span class="str">"cherry"</span>, <span class="str">"banana"</span>, <span class="str">"apple"</span>};
+<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; freq = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+
+<span class="kw">for</span> (<span class="ty">String</span> w : words) {
+    freq.<span class="mt">merge</span>(w, <span class="num">1</span>, <span class="ty">Integer</span>::<span class="mt">sum</span>); <span class="cmt">// clean way to count</span>
+    <span class="cmt">// OR: freq.put(w, freq.getOrDefault(w, 0) + 1);</span>
+}
+<span class="cmt">// {apple=3, banana=2, cherry=1}</span>
+
+<span class="cmt">// Java 8+ Operations</span>
+freq.<span class="mt">getOrDefault</span>(<span class="str">"mango"</span>, <span class="num">0</span>);   <span class="cmt">// 0 if absent</span>
+freq.<span class="mt">putIfAbsent</span>(<span class="str">"grape"</span>, <span class="num">1</span>);    <span class="cmt">// only puts if key missing</span>
+freq.<span class="mt">computeIfAbsent</span>(<span class="str">"kiwi"</span>, k -> <span class="num">0</span>);
+freq.<span class="mt">computeIfPresent</span>(<span class="str">"apple"</span>, (k, v) -> v + <span class="num">10</span>);
+
+<span class="cmt">// Iteration</span>
+<span class="kw">for</span> (<span class="ty">Map.Entry</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; e : freq.<span class="mt">entrySet</span>()) {
+    <span class="ty">System</span>.out.<span class="mt">println</span>(e.<span class="mt">getKey</span>() + <span class="str">" → "</span> + e.<span class="mt">getValue</span>());
+}
+freq.<span class="mt">forEach</span>((k, v) -> <span class="ty">System</span>.out.<span class="mt">println</span>(k + <span class="str">"="</span> + v));
+
+<span class="cmt">// Grouping with computeIfAbsent</span>
+<span class="ty">Map</span>&lt;<span class="ty">Integer</span>, <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;&gt; byLength = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+<span class="kw">for</span> (<span class="ty">String</span> w : words) {
+    byLength.<span class="mt">computeIfAbsent</span>(w.<span class="mt">length</span>(), k -> <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;()).<span class="mt">add</span>(w);
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- TREEMAP -->
+      <div class="concept-card" id="treemap">
+        <div class="card-header">
+          <span class="card-badge badge-coll">Map</span>
+          <div>
+            <div class="card-title">TreeMap</div>
+            <div class="card-desc">Sorted key-value map backed by a Red-Black Tree. Keys are ordered (natural or via Comparator). O(log n) operations.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="use-case-banner">
+            <strong>📅 Use When:</strong> You need keys in sorted order — leaderboards, range queries (find all keys between A and B), scheduled events, price ranges, alphabetical menus.
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">TreeMap.java</span></div>
+<pre><span class="cmt">// ✅ TreeMap — Leaderboard (sorted by score)</span>
+<span class="ty">TreeMap</span>&lt;<span class="ty">Integer</span>, <span class="ty">String</span>&gt; scores = <span class="kw">new</span> <span class="ty">TreeMap</span>&lt;&gt;(<span class="ty">Collections</span>.<span class="mt">reverseOrder</span>());
+scores.<span class="mt">put</span>(<span class="num">9500</span>, <span class="str">"Alice"</span>);
+scores.<span class="mt">put</span>(<span class="num">8700</span>, <span class="str">"Bob"</span>);
+scores.<span class="mt">put</span>(<span class="num">9900</span>, <span class="str">"Charlie"</span>);
+scores.<span class="mt">put</span>(<span class="num">7200</span>, <span class="str">"Dave"</span>);
+
+<span class="cmt">// Sorted automatically — highest first</span>
+scores.<span class="mt">forEach</span>((s, n) -> <span class="ty">System</span>.out.<span class="mt">println</span>(n + <span class="str">": "</span> + s));
+<span class="cmt">// Charlie: 9900, Alice: 9500, Bob: 8700, Dave: 7200</span>
+
+<span class="cmt">// Navigation methods (unique to TreeMap)</span>
+scores.<span class="mt">firstKey</span>();             <span class="cmt">// highest score</span>
+scores.<span class="mt">lastKey</span>();              <span class="cmt">// lowest score</span>
+scores.<span class="mt">floorKey</span>(<span class="num">9000</span>);        <span class="cmt">// greatest key ≤ 9000</span>
+scores.<span class="mt">ceilingKey</span>(<span class="num">8000</span>);      <span class="cmt">// smallest key ≥ 8000</span>
+scores.<span class="mt">headMap</span>(<span class="num">9000</span>);          <span class="cmt">// all keys < 9000</span>
+scores.<span class="mt">tailMap</span>(<span class="num">8700</span>);          <span class="cmt">// all keys >= 8700</span>
+scores.<span class="mt">subMap</span>(<span class="num">7200</span>, <span class="num">9500</span>);     <span class="cmt">// keys in [7200, 9500)</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- LINKEDHASHMAP -->
+      <div class="concept-card" id="linkedhashmap">
+        <div class="card-header">
+          <span class="card-badge badge-coll">Map</span>
+          <div>
+            <div class="card-title">LinkedHashMap</div>
+            <div class="card-desc">HashMap + maintains insertion order (or access order). The go-to choice for building an LRU Cache. O(1) operations like HashMap.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">LRUCache.java</span></div>
+<pre><span class="cmt">// ✅ LRU Cache using LinkedHashMap — Classic Interview!</span>
+<span class="kw">class</span> <span class="ty">LRUCache</span>&lt;<span class="ty">K</span>, <span class="ty">V</span>&gt; <span class="kw">extends</span> <span class="ty">LinkedHashMap</span>&lt;<span class="ty">K</span>, <span class="ty">V</span>&gt; {
+    <span class="kw">private final int</span> capacity;
+
+    <span class="kw">public</span> <span class="mt">LRUCache</span>(<span class="kw">int</span> capacity) {
+        <span class="kw">super</span>(capacity, <span class="num">0.75f</span>, <span class="kw">true</span>); <span class="cmt">// accessOrder=true</span>
+        <span class="kw">this</span>.capacity = capacity;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">protected boolean</span> <span class="mt">removeEldestEntry</span>(<span class="ty">Map.Entry</span>&lt;<span class="ty">K</span>, <span class="ty">V</span>&gt; eldest) {
+        <span class="kw">return</span> <span class="mt">size</span>() > capacity; <span class="cmt">// evict when over capacity</span>
+    }
+}
+
+<span class="ty">LRUCache</span>&lt;<span class="ty">Integer</span>, <span class="ty">String</span>&gt; cache = <span class="kw">new</span> <span class="ty">LRUCache</span>&lt;&gt;(<span class="num">3</span>);
+cache.<span class="mt">put</span>(<span class="num">1</span>, <span class="str">"A"</span>);
+cache.<span class="mt">put</span>(<span class="num">2</span>, <span class="str">"B"</span>);
+cache.<span class="mt">put</span>(<span class="num">3</span>, <span class="str">"C"</span>);
+cache.<span class="mt">get</span>(<span class="num">1</span>);       <span class="cmt">// access key 1 → moves to recent end</span>
+cache.<span class="mt">put</span>(<span class="num">4</span>, <span class="str">"D"</span>); <span class="cmt">// evicts key 2 (least recently used)</span>
+<span class="ty">System</span>.out.<span class="mt">println</span>(cache); <span class="cmt">// {3=C, 1=A, 4=D}</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- HASHSET -->
+      <div class="concept-card" id="hashset">
+        <div class="card-header">
+          <span class="card-badge badge-coll">Set</span>
+          <div>
+            <div class="card-title">HashSet & TreeSet</div>
+            <div class="card-desc">HashSet — no duplicates, O(1) add/contains, no order. TreeSet — sorted set, O(log n), backed by Red-Black Tree.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">HashSet Use Cases</div>
+              <div class="info-box-content">Deduplication, visited tracking (BFS/DFS), fast membership test — e.g. "has this user visited before?" </div>
+            </div>
+            <div class="info-box" id="treeset">
+              <div class="info-box-title">TreeSet Use Cases</div>
+              <div class="info-box-content">Sorted unique values, range queries, maintaining a sorted window — e.g. "find next higher number in a set".</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Set.java</span></div>
+<pre><span class="cmt">// ✅ HashSet — Remove duplicates, find intersection</span>
+<span class="ty">Set</span>&lt;<span class="ty">String</span>&gt; visited = <span class="kw">new</span> <span class="ty">HashSet</span>&lt;&gt;();
+visited.<span class="mt">add</span>(<span class="str">"page1"</span>);
+visited.<span class="mt">add</span>(<span class="str">"page2"</span>);
+visited.<span class="mt">add</span>(<span class="str">"page1"</span>); <span class="cmt">// duplicate — ignored</span>
+visited.<span class="mt">contains</span>(<span class="str">"page2"</span>); <span class="cmt">// O(1) — true</span>
+
+<span class="cmt">// Set operations</span>
+<span class="ty">Set</span>&lt;<span class="ty">Integer</span>&gt; a = <span class="kw">new</span> <span class="ty">HashSet</span>&lt;&gt;(<span class="ty">Arrays</span>.<span class="mt">asList</span>(<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>));
+<span class="ty">Set</span>&lt;<span class="ty">Integer</span>&gt; b = <span class="kw">new</span> <span class="ty">HashSet</span>&lt;&gt;(<span class="ty">Arrays</span>.<span class="mt">asList</span>(<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>));
+
+<span class="cmt">// Union</span>
+<span class="ty">Set</span>&lt;<span class="ty">Integer</span>&gt; union = <span class="kw">new</span> <span class="ty">HashSet</span>&lt;&gt;(a);
+union.<span class="mt">addAll</span>(b); <span class="cmt">// {1,2,3,4,5,6}</span>
+
+<span class="cmt">// Intersection</span>
+<span class="ty">Set</span>&lt;<span class="ty">Integer</span>&gt; inter = <span class="kw">new</span> <span class="ty">HashSet</span>&lt;&gt;(a);
+inter.<span class="mt">retainAll</span>(b); <span class="cmt">// {3,4}</span>
+
+<span class="cmt">// Difference</span>
+<span class="ty">Set</span>&lt;<span class="ty">Integer</span>&gt; diff = <span class="kw">new</span> <span class="ty">HashSet</span>&lt;&gt;(a);
+diff.<span class="mt">removeAll</span>(b); <span class="cmt">// {1,2}</span>
+
+<span class="cmt">// ✅ TreeSet — Sorted Set with navigation</span>
+<span class="ty">TreeSet</span>&lt;<span class="ty">Integer</span>&gt; ts = <span class="kw">new</span> <span class="ty">TreeSet</span>&lt;&gt;(<span class="ty">Arrays</span>.<span class="mt">asList</span>(<span class="num">5</span>,<span class="num">1</span>,<span class="num">9</span>,<span class="num">3</span>,<span class="num">7</span>));
+ts.<span class="mt">first</span>();            <span class="cmt">// 1</span>
+ts.<span class="mt">last</span>();             <span class="cmt">// 9</span>
+ts.<span class="mt">floor</span>(<span class="num">6</span>);           <span class="cmt">// 5 (largest ≤ 6)</span>
+ts.<span class="mt">ceiling</span>(<span class="num">6</span>);         <span class="cmt">// 7 (smallest ≥ 6)</span>
+ts.<span class="mt">headSet</span>(<span class="num">5</span>);         <span class="cmt">// [1, 3] (elements < 5)</span>
+ts.<span class="mt">subSet</span>(<span class="num">3</span>, <span class="num">8</span>);       <span class="cmt">// [3, 5, 7]</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARRAYDEQUE -->
+      <div class="concept-card" id="deque">
+        <div class="card-header">
+          <span class="card-badge badge-coll">Deque</span>
+          <div>
+            <div class="card-title">ArrayDeque — Double-Ended Queue</div>
+            <div class="card-desc">Faster than LinkedList and Stack. Works as both Stack and Queue. Resizable circular array. Best all-round choice for LIFO/FIFO.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">ArrayDeque.java</span></div>
+<pre><span class="ty">Deque</span>&lt;<span class="ty">Integer</span>&gt; dq = <span class="kw">new</span> <span class="ty">ArrayDeque</span>&lt;&gt;();
+
+<span class="cmt">// Add to both ends</span>
+dq.<span class="mt">addFirst</span>(<span class="num">1</span>);   dq.<span class="mt">addLast</span>(<span class="num">2</span>);
+dq.<span class="mt">offerFirst</span>(<span class="num">0</span>); dq.<span class="mt">offerLast</span>(<span class="num">3</span>);  <span class="cmt">// [0,1,2,3]</span>
+
+<span class="cmt">// Remove from both ends</span>
+dq.<span class="mt">pollFirst</span>(); <span class="cmt">// 0</span>
+dq.<span class="mt">pollLast</span>();  <span class="cmt">// 3</span>
+
+<span class="cmt">// Peek both ends</span>
+dq.<span class="mt">peekFirst</span>(); <span class="cmt">// 1 — no removal</span>
+dq.<span class="mt">peekLast</span>();  <span class="cmt">// 2 — no removal</span>
+
+<span class="cmt">// ✅ Sliding Window Maximum (Monotonic Deque)</span>
+<span class="kw">public int</span>[] <span class="mt">maxSlidingWindow</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+    <span class="ty">Deque</span>&lt;<span class="ty">Integer</span>&gt; dq = <span class="kw">new</span> <span class="ty">ArrayDeque</span>&lt;&gt;();
+    <span class="kw">int</span>[] res = <span class="kw">new int</span>[nums.length - k + <span class="num">1</span>];
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; nums.length; i++) {
+        <span class="kw">while</span> (!dq.<span class="mt">isEmpty</span>() && dq.<span class="mt">peekFirst</span>() &lt; i - k + <span class="num">1</span>)
+            dq.<span class="mt">pollFirst</span>();
+        <span class="kw">while</span> (!dq.<span class="mt">isEmpty</span>() && nums[dq.<span class="mt">peekLast</span>()] &lt; nums[i])
+            dq.<span class="mt">pollLast</span>();
+        dq.<span class="mt">addLast</span>(i);
+        <span class="kw">if</span> (i >= k - <span class="num">1</span>) res[i - k + <span class="num">1</span>] = nums[dq.<span class="mt">peekFirst</span>()];
+    }
+    <span class="kw">return</span> res;
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GENERICS -->
+    <div class="section" id="generic">
+      <div class="section-title">
+        <div class="icon" style="background:linear-gradient(135deg,var(--accent3),#4af7f7)">⚙️</div>
+        Generics
+      </div>
+      <div class="concept-card">
+        <div class="card-header">
+          <span class="card-badge badge-algo">Advanced</span>
+          <div>
+            <div class="card-title">Generics — Type-Safe Containers</div>
+            <div class="card-desc">Write code that works with any type while catching type errors at compile time. Eliminates casting and ClassCastException at runtime.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Generics.java</span></div>
+<pre><span class="cmt">// ✅ Generic Class — Pair</span>
+<span class="kw">public class</span> <span class="ty">Pair</span>&lt;<span class="ty">F</span>, <span class="ty">S</span>&gt; {
+    <span class="kw">private final</span> <span class="ty">F</span> first;
+    <span class="kw">private final</span> <span class="ty">S</span> second;
+
+    <span class="kw">public</span> <span class="mt">Pair</span>(<span class="ty">F</span> first, <span class="ty">S</span> second) {
+        <span class="kw">this</span>.first = first;
+        <span class="kw">this</span>.second = second;
+    }
+    <span class="kw">public</span> <span class="ty">F</span> <span class="mt">getFirst</span>()  { <span class="kw">return</span> first;  }
+    <span class="kw">public</span> <span class="ty">S</span> <span class="mt">getSecond</span>() { <span class="kw">return</span> second; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="ty">String</span> <span class="mt">toString</span>() { <span class="kw">return</span> <span class="str">"("</span> + first + <span class="str">", "</span> + second + <span class="str">")"</span>; }
+}
+
+<span class="ty">Pair</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; nameAge = <span class="kw">new</span> <span class="ty">Pair</span>&lt;&gt;(<span class="str">"Alice"</span>, <span class="num">25</span>);
+<span class="ty">Pair</span>&lt;<span class="ty">Double</span>, <span class="ty">Double</span>&gt; point   = <span class="kw">new</span> <span class="ty">Pair</span>&lt;&gt;(<span class="num">3.0</span>, <span class="num">4.0</span>);
+
+<span class="cmt">// ✅ Generic Method</span>
+<span class="kw">public static</span> &lt;<span class="ty">T</span> <span class="kw">extends</span> <span class="ty">Comparable</span>&lt;<span class="ty">T</span>&gt;&gt; <span class="ty">T</span> <span class="mt">max</span>(<span class="ty">T</span> a, <span class="ty">T</span> b) {
+    <span class="kw">return</span> a.<span class="mt">compareTo</span>(b) &gt; <span class="num">0</span> ? a : b;
+}
+<span class="mt">max</span>(<span class="num">10</span>, <span class="num">20</span>);        <span class="cmt">// 20</span>
+<span class="mt">max</span>(<span class="str">"apple"</span>, <span class="str">"mango"</span>); <span class="cmt">// "mango"</span>
+
+<span class="cmt">// Wildcards</span>
+<span class="kw">void</span> <span class="mt">printList</span>(<span class="ty">List</span>&lt;? <span class="kw">extends</span> <span class="ty">Number</span>&gt; list) { <span class="cmt">// upper bound</span>
+    list.<span class="mt">forEach</span>(<span class="ty">System</span>.out::<span class="mt">println</span>);
+}
+<span class="kw">void</span> <span class="mt">addNumbers</span>(<span class="ty">List</span>&lt;? <span class="kw">super</span> <span class="ty">Integer</span>&gt; list) { <span class="cmt">// lower bound</span>
+    list.<span class="mt">add</span>(<span class="num">42</span>);
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARABLE & COMPARATOR -->
+    <div class="section" id="comparable">
+      <div class="section-title">
+        <div class="icon" style="background:linear-gradient(135deg,var(--accent4),#f74aaa)">🔀</div>
+        Comparable & Comparator
+      </div>
+      <div class="concept-card">
+        <div class="card-header">
+          <span class="card-badge badge-algo">Advanced</span>
+          <div>
+            <div class="card-title">Custom Sorting Strategies</div>
+            <div class="card-desc">Comparable = natural/default sort (implement in the class). Comparator = external, flexible sort (pass as argument, multiple strategies).</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Sorting.java</span></div>
+<pre><span class="cmt">// ✅ Comparable — Natural sort (by salary)</span>
+<span class="kw">class</span> <span class="ty">Employee</span> <span class="kw">implements</span> <span class="ty">Comparable</span>&lt;<span class="ty">Employee</span>&gt; {
+    <span class="ty">String</span> name; <span class="kw">int</span> age; <span class="kw">double</span> salary;
+
+    <span class="mt">Employee</span>(<span class="ty">String</span> n, <span class="kw">int</span> a, <span class="kw">double</span> s) { name=n; age=a; salary=s; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> <span class="mt">compareTo</span>(<span class="ty">Employee</span> o) {
+        <span class="kw">return</span> <span class="ty">Double</span>.<span class="mt">compare</span>(<span class="kw">this</span>.salary, o.salary); <span class="cmt">// ascending</span>
+    }
+}
+
+<span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; emps = <span class="ty">Arrays</span>.<span class="mt">asList</span>(
+    <span class="kw">new</span> <span class="ty">Employee</span>(<span class="str">"Alice"</span>, <span class="num">30</span>, <span class="num">80000</span>),
+    <span class="kw">new</span> <span class="ty">Employee</span>(<span class="str">"Bob"</span>,   <span class="num">25</span>, <span class="num">60000</span>),
+    <span class="kw">new</span> <span class="ty">Employee</span>(<span class="str">"Carol"</span>, <span class="num">35</span>, <span class="num">90000</span>)
+);
+<span class="ty">Collections</span>.<span class="mt">sort</span>(emps); <span class="cmt">// Bob, Alice, Carol (by salary)</span>
+
+<span class="cmt">// ✅ Comparator — External flexible sort (Java 8 style)</span>
+<span class="ty">Comparator</span>&lt;<span class="ty">Employee</span>&gt; byName = <span class="ty">Comparator</span>.<span class="mt">comparing</span>(e -> e.name);
+<span class="ty">Comparator</span>&lt;<span class="ty">Employee</span>&gt; byAge  = <span class="ty">Comparator</span>.<span class="mt">comparingInt</span>(e -> e.age);
+
+<span class="cmt">// Chained: sort by age, then name if age ties</span>
+<span class="ty">Comparator</span>&lt;<span class="ty">Employee</span>&gt; combined = <span class="ty">Comparator</span>
+    .<span class="mt">comparingInt</span>((<span class="ty">Employee</span> e) -> e.age)
+    .<span class="mt">thenComparing</span>(e -> e.name)
+    .<span class="mt">reversed</span>();
+
+emps.<span class="mt">sort</span>(byName);
+emps.<span class="mt">sort</span>(byAge.<span class="mt">reversed</span>());
+emps.<span class="mt">sort</span>(combined);
+
+<span class="cmt">// Sort using PriorityQueue with Comparator</span>
+<span class="ty">PriorityQueue</span>&lt;<span class="ty">Employee</span>&gt; pq = <span class="kw">new</span> <span class="ty">PriorityQueue</span>&lt;&gt;(
+    <span class="ty">Comparator</span>.<span class="mt">comparingDouble</span>((<span class="ty">Employee</span> e) -> e.salary).<span class="mt">reversed</span>()
+);
+emps.<span class="mt">forEach</span>(pq::<span class="mt">offer</span>);
+<span class="kw">while</span> (!pq.<span class="mt">isEmpty</span>()) pq.<span class="mt">poll</span>().<span class="mt">name</span>; <span class="cmt">// Carol, Alice, Bob</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESIGN PATTERNS -->
+    <div class="section" id="design-patterns">
+      <div class="section-title">
+        <div class="icon" style="background:linear-gradient(135deg,#f74aaa,var(--accent4))">🏗️</div>
+        Design Patterns
+      </div>
+      <p class="section-desc">Proven OOP solutions to recurring design problems. Know these cold for system design interviews.</p>
+      <div class="concept-card">
+        <div class="card-header">
+          <span class="card-badge badge-interview">Patterns</span>
+          <div>
+            <div class="card-title">Singleton, Builder, Factory, Observer, Strategy</div>
+            <div class="card-desc">The 5 most commonly asked design patterns in Java interviews with implementations.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(this,'dp-singleton')">Singleton</button>
+            <button class="tab-btn" onclick="switchTab(this,'dp-factory')">Factory</button>
+            <button class="tab-btn" onclick="switchTab(this,'dp-builder')">Builder</button>
+            <button class="tab-btn" onclick="switchTab(this,'dp-observer')">Observer</button>
+            <button class="tab-btn" onclick="switchTab(this,'dp-strategy')">Strategy</button>
+          </div>
+          <div id="dp-singleton" class="tab-pane active">
+<div class="code-block"><div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Singleton.java</span></div>
+<pre><span class="cmt">// ✅ Thread-safe Singleton (Double-Checked Locking)</span>
+<span class="kw">public class</span> <span class="ty">DatabaseConnection</span> {
+    <span class="kw">private static volatile</span> <span class="ty">DatabaseConnection</span> instance;
+    <span class="kw">private</span> <span class="ty">String</span> url;
+
+    <span class="kw">private</span> <span class="mt">DatabaseConnection</span>() {
+        url = <span class="str">"jdbc:mysql://localhost:3306/app"</span>;
+    }
+
+    <span class="kw">public static</span> <span class="ty">DatabaseConnection</span> <span class="mt">getInstance</span>() {
+        <span class="kw">if</span> (instance == <span class="kw">null</span>) {
+            <span class="kw">synchronized</span> (<span class="ty">DatabaseConnection</span>.<span class="kw">class</span>) {
+                <span class="kw">if</span> (instance == <span class="kw">null</span>) {
+                    instance = <span class="kw">new</span> <span class="ty">DatabaseConnection</span>();
+                }
+            }
+        }
+        <span class="kw">return</span> instance;
+    }
+
+    <span class="kw">public void</span> <span class="mt">query</span>(<span class="ty">String</span> sql) { <span class="cmt">/* execute */</span> }
+}
+
+<span class="cmt">// Usage — always same instance</span>
+<span class="ty">DatabaseConnection</span> db1 = <span class="ty">DatabaseConnection</span>.<span class="mt">getInstance</span>();
+<span class="ty">DatabaseConnection</span> db2 = <span class="ty">DatabaseConnection</span>.<span class="mt">getInstance</span>();
+db1 == db2; <span class="cmt">// true — same object</span></pre></div>
+          </div>
+          <div id="dp-factory" class="tab-pane">
+<div class="code-block"><div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Factory.java</span></div>
+<pre><span class="cmt">// ✅ Factory Method Pattern</span>
+<span class="kw">interface</span> <span class="ty">Notification</span> {
+    <span class="kw">void</span> <span class="mt">send</span>(<span class="ty">String</span> message);
+}
+
+<span class="kw">class</span> <span class="ty">EmailNotification</span> <span class="kw">implements</span> <span class="ty">Notification</span> {
+    <span class="kw">public void</span> <span class="mt">send</span>(<span class="ty">String</span> msg) { <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"📧 Email: "</span> + msg); }
+}
+<span class="kw">class</span> <span class="ty">SMSNotification</span> <span class="kw">implements</span> <span class="ty">Notification</span> {
+    <span class="kw">public void</span> <span class="mt">send</span>(<span class="ty">String</span> msg) { <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"📱 SMS: "</span> + msg); }
+}
+<span class="kw">class</span> <span class="ty">PushNotification</span> <span class="kw">implements</span> <span class="ty">Notification</span> {
+    <span class="kw">public void</span> <span class="mt">send</span>(<span class="ty">String</span> msg) { <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"🔔 Push: "</span> + msg); }
+}
+
+<span class="kw">class</span> <span class="ty">NotificationFactory</span> {
+    <span class="kw">public static</span> <span class="ty">Notification</span> <span class="mt">create</span>(<span class="ty">String</span> type) {
+        <span class="kw">return switch</span> (type.<span class="mt">toUpperCase</span>()) {
+            <span class="kw">case</span> <span class="str">"EMAIL"</span> -> <span class="kw">new</span> <span class="ty">EmailNotification</span>();
+            <span class="kw">case</span> <span class="str">"SMS"</span>   -> <span class="kw">new</span> <span class="ty">SMSNotification</span>();
+            <span class="kw">case</span> <span class="str">"PUSH"</span>  -> <span class="kw">new</span> <span class="ty">PushNotification</span>();
+            <span class="kw">default</span> -> <span class="kw">throw new</span> <span class="ty">IllegalArgumentException</span>(<span class="str">"Unknown: "</span> + type);
+        };
+    }
+}
+
+<span class="ty">Notification</span> n = <span class="ty">NotificationFactory</span>.<span class="mt">create</span>(<span class="str">"EMAIL"</span>);
+n.<span class="mt">send</span>(<span class="str">"Order confirmed!"</span>); <span class="cmt">// 📧 Email: Order confirmed!</span></pre></div>
+          </div>
+          <div id="dp-builder" class="tab-pane">
+<div class="code-block"><div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Builder.java</span></div>
+<pre><span class="cmt">// ✅ Builder Pattern — Complex Object Construction</span>
+<span class="kw">public class</span> <span class="ty">Pizza</span> {
+    <span class="kw">private final</span> <span class="ty">String</span>  size, crust, sauce;
+    <span class="kw">private final boolean</span> cheese, pepperoni, mushrooms;
+
+    <span class="kw">private</span> <span class="mt">Pizza</span>(<span class="ty">Builder</span> b) {
+        <span class="kw">this</span>.size = b.size; <span class="kw">this</span>.crust = b.crust;
+        <span class="kw">this</span>.sauce = b.sauce; <span class="kw">this</span>.cheese = b.cheese;
+        <span class="kw">this</span>.pepperoni = b.pepperoni; <span class="kw">this</span>.mushrooms = b.mushrooms;
+    }
+
+    <span class="kw">public static class</span> <span class="ty">Builder</span> {
+        <span class="kw">private</span> <span class="ty">String</span> size, crust = <span class="str">"THIN"</span>, sauce = <span class="str">"TOMATO"</span>;
+        <span class="kw">private boolean</span> cheese, pepperoni, mushrooms;
+
+        <span class="kw">public</span> <span class="mt">Builder</span>(<span class="ty">String</span> size) { <span class="kw">this</span>.size = size; }
+
+        <span class="kw">public</span> <span class="ty">Builder</span> <span class="mt">crust</span>(<span class="ty">String</span> c)      { crust = c; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="ty">Builder</span> <span class="mt">sauce</span>(<span class="ty">String</span> s)      { sauce = s; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="ty">Builder</span> <span class="mt">cheese</span>()             { cheese = <span class="kw">true</span>; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="ty">Builder</span> <span class="mt">pepperoni</span>()          { pepperoni = <span class="kw">true</span>; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="ty">Builder</span> <span class="mt">mushrooms</span>()          { mushrooms = <span class="kw">true</span>; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="ty">Pizza</span>   <span class="mt">build</span>()              { <span class="kw">return new</span> <span class="ty">Pizza</span>(<span class="kw">this</span>); }
+    }
+}
+
+<span class="cmt">// Fluent API — readable and immutable</span>
+<span class="ty">Pizza</span> pizza = <span class="kw">new</span> <span class="ty">Pizza</span>.<span class="ty">Builder</span>(<span class="str">"LARGE"</span>)
+    .<span class="mt">crust</span>(<span class="str">"THICK"</span>)
+    .<span class="mt">sauce</span>(<span class="str">"PESTO"</span>)
+    .<span class="mt">cheese</span>()
+    .<span class="mt">pepperoni</span>()
+    .<span class="mt">build</span>();</pre></div>
+          </div>
+          <div id="dp-observer" class="tab-pane">
+<div class="code-block"><div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Observer.java</span></div>
+<pre><span class="cmt">// ✅ Observer Pattern — Event System</span>
+<span class="kw">interface</span> <span class="ty">Observer</span> {
+    <span class="kw">void</span> <span class="mt">update</span>(<span class="ty">String</span> event, <span class="ty">Object</span> data);
+}
+
+<span class="kw">class</span> <span class="ty">EventBus</span> {
+    <span class="kw">private final</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">List</span>&lt;<span class="ty">Observer</span>&gt;&gt; listeners = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="mt">subscribe</span>(<span class="ty">String</span> event, <span class="ty">Observer</span> obs) {
+        listeners.<span class="mt">computeIfAbsent</span>(event, k -> <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;()).<span class="mt">add</span>(obs);
+    }
+
+    <span class="kw">public void</span> <span class="mt">publish</span>(<span class="ty">String</span> event, <span class="ty">Object</span> data) {
+        listeners.<span class="mt">getOrDefault</span>(event, <span class="ty">List</span>.<span class="mt">of</span>())
+                 .<span class="mt">forEach</span>(obs -> obs.<span class="mt">update</span>(event, data));
+    }
+}
+
+<span class="ty">EventBus</span> bus = <span class="kw">new</span> <span class="ty">EventBus</span>();
+bus.<span class="mt">subscribe</span>(<span class="str">"ORDER_PLACED"</span>, (e, d) -> <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"📧 Email sent for: "</span>  + d));
+bus.<span class="mt">subscribe</span>(<span class="str">"ORDER_PLACED"</span>, (e, d) -> <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"📱 SMS sent for: "</span>    + d));
+bus.<span class="mt">subscribe</span>(<span class="str">"ORDER_PLACED"</span>, (e, d) -> <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="str">"📦 Inventory updated: "</span>+ d));
+
+bus.<span class="mt">publish</span>(<span class="str">"ORDER_PLACED"</span>, <span class="str">"Order #1042"</span>);
+<span class="cmt">// All 3 subscribers automatically notified</span></pre></div>
+          </div>
+          <div id="dp-strategy" class="tab-pane">
+<div class="code-block"><div class="code-header"><div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div><span class="lang">Strategy.java</span></div>
+<pre><span class="cmt">// ✅ Strategy Pattern — Sorting algorithms interchangeable</span>
+<span class="an">@FunctionalInterface</span>
+<span class="kw">interface</span> <span class="ty">SortStrategy</span> {
+    <span class="kw">void</span> <span class="mt">sort</span>(<span class="kw">int</span>[] arr);
+}
+
+<span class="kw">class</span> <span class="ty">Sorter</span> {
+    <span class="kw">private</span> <span class="ty">SortStrategy</span> strategy;
+
+    <span class="kw">public</span> <span class="mt">Sorter</span>(<span class="ty">SortStrategy</span> strategy) { <span class="kw">this</span>.strategy = strategy; }
+
+    <span class="kw">public void</span> <span class="mt">setStrategy</span>(<span class="ty">SortStrategy</span> strategy) {
+        <span class="kw">this</span>.strategy = strategy;
+    }
+
+    <span class="kw">public void</span> <span class="mt">sort</span>(<span class="kw">int</span>[] arr) { strategy.<span class="mt">sort</span>(arr); }
+}
+
+<span class="cmt">// Strategies as lambdas</span>
+<span class="ty">SortStrategy</span> bubbleSort  = arr -> { <span class="cmt">/* bubble sort */</span> };
+<span class="ty">SortStrategy</span> mergeSort   = arr -> { <span class="cmt">/* merge sort  */</span> };
+<span class="ty">SortStrategy</span> javaSort    = arr -> <span class="ty">Arrays</span>.<span class="mt">sort</span>(arr);
+
+<span class="ty">Sorter</span> sorter = <span class="kw">new</span> <span class="ty">Sorter</span>(bubbleSort);
+sorter.<span class="mt">sort</span>(<span class="kw">new int</span>[] {<span class="num">5</span>,<span class="num">3</span>,<span class="num">1</span>,<span class="num">4</span>});
+
+sorter.<span class="mt">setStrategy</span>(javaSort); <span class="cmt">// swap strategy at runtime</span>
+sorter.<span class="mt">sort</span>(<span class="kw">new int</span>[] {<span class="num">9</span>,<span class="num">2</span>,<span class="num">7</span>});</pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPLEXITY TABLE -->
+    <div class="section" id="complexity">
+      <div class="section-title">
+        <div class="icon" style="background:linear-gradient(135deg,var(--accent3),#4aaff7)">📊</div>
+        Complexity Cheatsheet
+      </div>
+      <div class="concept-card">
+        <div class="card-body" style="padding-top:16px">
+          <table>
+            <thead>
+              <tr><th>Collection</th><th>Get/Access</th><th>Add</th><th>Remove</th><th>Search</th><th>Order</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>ArrayList</strong></td><td class="tc-good">O(1)</td><td class="tc-good">O(1)*</td><td class="tc-bad">O(n)</td><td class="tc-bad">O(n)</td><td>Insertion</td></tr>
+              <tr><td><strong>LinkedList</strong></td><td class="tc-bad">O(n)</td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td class="tc-bad">O(n)</td><td>Insertion</td></tr>
+              <tr><td><strong>ArrayDeque</strong></td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td class="tc-bad">O(n)</td><td>None</td></tr>
+              <tr><td><strong>HashMap</strong></td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td>None</td></tr>
+              <tr><td><strong>TreeMap</strong></td><td class="tc-med">O(log n)</td><td class="tc-med">O(log n)</td><td class="tc-med">O(log n)</td><td class="tc-med">O(log n)</td><td>Sorted</td></tr>
+              <tr><td><strong>LinkedHashMap</strong></td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td>Insertion</td></tr>
+              <tr><td><strong>HashSet</strong></td><td>—</td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td>None</td></tr>
+              <tr><td><strong>TreeSet</strong></td><td>—</td><td class="tc-med">O(log n)</td><td class="tc-med">O(log n)</td><td class="tc-med">O(log n)</td><td>Sorted</td></tr>
+              <tr><td><strong>PriorityQueue</strong></td><td class="tc-good">O(1)*</td><td class="tc-med">O(log n)</td><td class="tc-med">O(log n)</td><td class="tc-bad">O(n)</td><td>Priority</td></tr>
+              <tr><td><strong>Stack/ArrayDeque</strong></td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td class="tc-good">O(1)</td><td class="tc-bad">O(n)</td><td>LIFO</td></tr>
+            </tbody>
+          </table>
+          <p style="color:var(--muted);font-size:11px;margin-top:10px;font-family:'Space Mono',monospace">* Amortized. PriorityQueue peek=O(1), poll=O(log n). ArrayList add-end=O(1) amortized.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========== INTERVIEW QUESTIONS =========== -->
+    <div class="section" id="interview">
+      <div class="section-title">
+        <div class="icon" style="background:linear-gradient(135deg,var(--accent4),#f7a84a)">🔥</div>
+        Top 50 Java OOP Interview Questions
+      </div>
+      <p class="section-desc">Most frequently asked in product companies — Infosys, TCS, Wipro, Amazon, Google, Flipkart, Zoho, and startups.</p>
+
+      <div id="q1" class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">1</div>
+          <div class="q-text">What are the four pillars of OOP?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          The four pillars are: <strong style="color:var(--accent)">Encapsulation</strong> (hiding internal state), <strong style="color:var(--accent2)">Inheritance</strong> (child class inherits parent), <strong style="color:var(--accent3)">Polymorphism</strong> (one interface, many forms), and <strong style="color:var(--accent4)">Abstraction</strong> (hiding complexity, showing only essentials). Together they make code modular, reusable, and maintainable.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">2</div>
+          <div class="q-text">What is the difference between abstract class and interface?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Abstract Class:</strong> Can have constructors, instance variables, concrete and abstract methods. A class can extend only <em>one</em> abstract class. Use when classes share common state or a partial implementation.<br><br>
+          <strong>Interface:</strong> No instance variables (only constants), no constructors. Since Java 8: default and static methods. Since Java 9: private methods. A class can implement <em>multiple</em> interfaces. Use for defining a pure contract or capability. When in doubt, prefer interface for flexibility.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">3</div>
+          <div class="q-text">What is method overloading vs method overriding?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Overloading (Compile-time polymorphism):</strong> Same class, same method name, different parameter list. Resolved at compile time. Return type alone cannot differentiate overloaded methods.<br><br>
+          <strong>Overriding (Runtime polymorphism):</strong> Subclass redefines a parent method with same signature. Must use <code>@Override</code>. Cannot override <code>static</code>, <code>final</code>, or <code>private</code> methods. Resolved at runtime via dynamic dispatch.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">4</div>
+          <div class="q-text">What is the difference between HashMap and Hashtable?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>HashMap:</strong> Not synchronized (not thread-safe), allows <code>null</code> key (one) and <code>null</code> values, faster, part of Java Collections Framework (since Java 2).<br><br>
+          <strong>Hashtable:</strong> Synchronized (thread-safe but slower), does NOT allow <code>null</code> keys or values, legacy class (since Java 1.0). Prefer <code>ConcurrentHashMap</code> over Hashtable in modern code for better concurrent performance.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">5</div>
+          <div class="q-text">Explain the difference between ArrayList and LinkedList.</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>ArrayList:</strong> Backed by dynamic array. O(1) random access (get by index). O(n) insertion/deletion in middle (shifting required). Low memory overhead. Best for read-heavy workloads.<br><br>
+          <strong>LinkedList:</strong> Doubly-linked nodes. O(n) random access (must traverse). O(1) insertion/deletion at head/tail. Higher memory (each node stores two pointers). Best for frequent insertions/deletions at ends, implementing Queue/Deque/Stack.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">6</div>
+          <div class="q-text">How does HashMap work internally?</div>
+          <span class="q-difficulty diff-hard">Hard</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          HashMap uses an array of buckets (default size 16). For each key: <code>hashCode()</code> is computed, then compressed to a bucket index using <code>(n-1) & hash</code>. Collisions are handled by chaining (LinkedList per bucket). In Java 8+, when a bucket's chain exceeds 8 entries <em>and</em> the table has ≥ 64 buckets, the chain converts to a <strong>Red-Black Tree</strong> (O(log n) lookup in worst case). When load factor (default 0.75) is exceeded, the table <strong>doubles in size</strong> and all entries are rehashed. Keys must implement <code>hashCode()</code> and <code>equals()</code> correctly.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">7</div>
+          <div class="q-text">What is the difference between == and .equals() in Java?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <code>==</code> compares <strong>references</strong> (memory addresses) for objects, values for primitives.<br>
+          <code>.equals()</code> compares <strong>content/value</strong> (unless not overridden, defaults to <code>==</code>).<br><br>
+          <code>new String("abc") == new String("abc")</code> → <strong>false</strong> (different objects)<br>
+          <code>new String("abc").equals(new String("abc"))</code> → <strong>true</strong> (same content)<br><br>
+          String literals from the pool may return <code>true</code> with <code>==</code> due to interning, but always use <code>.equals()</code> for string comparison.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">8</div>
+          <div class="q-text">What is the contract between hashCode() and equals()?</div>
+          <span class="q-difficulty diff-hard">Hard</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          If two objects are equal (<code>a.equals(b) == true</code>), they MUST have the same <code>hashCode()</code>. The reverse is NOT required — two objects can have the same hash code without being equal (collision). Breaking this contract will cause HashMap/HashSet to malfunction (objects won't be found after insertion). Always override <strong>both</strong> <code>hashCode()</code> and <code>equals()</code> together. IDE-generated or <code>Objects.hash()</code> implementations are recommended.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">9</div>
+          <div class="q-text">What is the difference between final, finally, and finalize?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>final:</strong> Keyword — prevents class extension, method overriding, or variable reassignment.<br>
+          <strong>finally:</strong> Block in try-catch — always executes regardless of exception (used for cleanup: closing streams, DB connections).<br>
+          <strong>finalize():</strong> Method in Object — called by GC before an object is garbage collected (deprecated in Java 9, removed in Java 18). Use <code>AutoCloseable</code> / try-with-resources instead.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">10</div>
+          <div class="q-text">What is a Singleton pattern and how do you make it thread-safe?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          Singleton ensures only one instance of a class exists. Thread-safe approaches:<br>
+          1. <strong>Eager initialization</strong>: <code>private static final Singleton INSTANCE = new Singleton();</code> — JVM guarantees single initialization<br>
+          2. <strong>Double-checked locking</strong>: check null, synchronize, check null again, create — use <code>volatile</code><br>
+          3. <strong>Bill Pugh (recommended)</strong>: inner static holder class — instance created only when <code>getInstance()</code> is called, JVM handles synchronization via class loading<br>
+          4. <strong>Enum singleton</strong>: <code>enum Singleton { INSTANCE; }</code> — serialization-safe, thread-safe, simplest
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">11</div>
+          <div class="q-text">What is the difference between Comparable and Comparator?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Comparable</strong> (java.lang): Implemented by the class itself. Defines the <em>natural ordering</em> via <code>compareTo(T o)</code>. Only one ordering possible. Used by <code>Collections.sort()</code>, TreeMap, TreeSet automatically.<br><br>
+          <strong>Comparator</strong> (java.util): External comparator class/lambda. Allows <em>multiple orderings</em>. Passed to sort methods explicitly. Java 8+ supports chaining via <code>thenComparing()</code>. Preferred when you don't control the class being sorted.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">12</div>
+          <div class="q-text">What is the difference between Iterator and ListIterator?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Iterator:</strong> One-way traversal (forward only). Works on any Collection. Methods: <code>hasNext()</code>, <code>next()</code>, <code>remove()</code>.<br><br>
+          <strong>ListIterator:</strong> Bi-directional traversal. Works only on List. Additional methods: <code>hasPrevious()</code>, <code>previous()</code>, <code>add()</code>, <code>set()</code>, <code>nextIndex()</code>, <code>previousIndex()</code>. Can modify the list during iteration.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">13</div>
+          <div class="q-text">What is ConcurrentModificationException and how to avoid it?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          Thrown when a collection is modified while iterating over it using an enhanced for-loop or Iterator (fail-fast behavior).<br><br>
+          <strong>Solutions:</strong><br>
+          1. Use <code>Iterator.remove()</code> instead of <code>list.remove()</code> during iteration<br>
+          2. Collect items to remove, then <code>list.removeAll(toRemove)</code> after loop<br>
+          3. Use <code>removeIf(predicate)</code> — cleanest approach<br>
+          4. Use <code>CopyOnWriteArrayList</code> — creates a copy on modification (thread-safe reads)<br>
+          5. Use <code>ConcurrentHashMap</code> for maps in concurrent code
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">14</div>
+          <div class="q-text">What is the difference between Stack and Queue?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Stack (LIFO):</strong> Last In, First Out. Elements are pushed/popped from the top. Use: function call stack, undo, DFS, bracket matching. Java: use <code>ArrayDeque</code> as stack.<br><br>
+          <strong>Queue (FIFO):</strong> First In, First Out. Elements enqueue at back, dequeue from front. Use: BFS, task scheduling, printer spooler. Java: <code>LinkedList</code>, <code>ArrayDeque</code> as queue. <code>PriorityQueue</code> for priority-based ordering.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">15</div>
+          <div class="q-text">What is a functional interface? Give examples.</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          A functional interface has exactly ONE abstract method. It can have default and static methods. Annotated with <code>@FunctionalInterface</code> (optional but recommended). They enable lambda expressions.<br><br>
+          Built-in examples (java.util.function):<br>
+          • <code>Predicate&lt;T&gt;</code> — <code>test(T)</code> → boolean (filtering)<br>
+          • <code>Function&lt;T,R&gt;</code> — <code>apply(T)</code> → R (transforming)<br>
+          • <code>Consumer&lt;T&gt;</code> — <code>accept(T)</code> → void (side effects)<br>
+          • <code>Supplier&lt;T&gt;</code> — <code>get()</code> → T (factories)<br>
+          • <code>BiFunction&lt;T,U,R&gt;</code> — <code>apply(T,U)</code> → R
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">16</div>
+          <div class="q-text">What is the difference between checked and unchecked exceptions?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Checked Exceptions:</strong> Checked at compile time. Must be caught or declared with <code>throws</code>. Extend <code>Exception</code>. Examples: <code>IOException</code>, <code>SQLException</code>, <code>ClassNotFoundException</code>. Represent recoverable conditions.<br><br>
+          <strong>Unchecked Exceptions:</strong> Extend <code>RuntimeException</code>. Not required to catch/declare. Examples: <code>NullPointerException</code>, <code>ArrayIndexOutOfBoundsException</code>, <code>ClassCastException</code>, <code>IllegalArgumentException</code>. Represent programming errors.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">17</div>
+          <div class="q-text">What is the difference between String, StringBuilder, and StringBuffer?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>String:</strong> Immutable. Every modification creates a new object. Stored in String Pool. Thread-safe by nature. Use for constants and final values.<br><br>
+          <strong>StringBuilder:</strong> Mutable, NOT thread-safe, FASTER. Use for single-threaded string manipulation (loops, concatenation). Preferred in modern code.<br><br>
+          <strong>StringBuffer:</strong> Mutable, thread-safe (synchronized), slower than StringBuilder. Use only when multiple threads access the same buffer (rare in practice).
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">18</div>
+          <div class="q-text">What is a TreeMap and when would you use it over HashMap?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          TreeMap is a Red-Black Tree–based sorted map. Keys are maintained in sorted order. O(log n) operations vs O(1) average for HashMap.<br><br>
+          Use TreeMap when:<br>
+          • You need keys in sorted/natural order<br>
+          • You need range queries: <code>subMap()</code>, <code>headMap()</code>, <code>tailMap()</code><br>
+          • You need navigation: <code>floorKey()</code>, <code>ceilingKey()</code>, <code>firstKey()</code>, <code>lastKey()</code><br>
+          • Building leaderboards, schedules, or range-based lookups<br><br>
+          Keys must implement <code>Comparable</code> or you must provide a <code>Comparator</code>.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">19</div>
+          <div class="q-text">What is the difference between throw and throws?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong><code>throw</code>:</strong> Used inside a method to explicitly throw an exception object. Followed by an exception instance: <code>throw new IllegalArgumentException("msg");</code><br><br>
+          <strong><code>throws</code>:</strong> Used in method signature to declare what checked exceptions a method <em>may</em> propagate to callers: <code>public void read() throws IOException {}</code>. It is a warning to the compiler and callers that this exception must be handled.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">20</div>
+          <div class="q-text">What is an immutable class? How do you create one?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          An immutable class's state cannot change after creation. Examples: <code>String</code>, <code>Integer</code>, <code>LocalDate</code>.<br><br>
+          Rules for creating an immutable class:<br>
+          1. Declare class as <code>final</code> (prevent subclassing)<br>
+          2. Make all fields <code>private final</code><br>
+          3. No setters<br>
+          4. Initialize all fields via constructor<br>
+          5. If fields are mutable objects (e.g. List, Date), return <strong>deep copies</strong> in getters and copy incoming values in constructor (defensive copying)<br><br>
+          Benefits: Thread-safe by nature, safe as HashMap keys, simpler reasoning about state.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">21</div>
+          <div class="q-text">What is the difference between HashSet and TreeSet?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>HashSet:</strong> Backed by HashMap. O(1) add/contains/remove. No guaranteed order. Allows one <code>null</code> element. Use for fast membership tests and deduplication without caring about order.<br><br>
+          <strong>TreeSet:</strong> Backed by TreeMap (Red-Black Tree). O(log n) operations. Elements kept in sorted order. Does NOT allow <code>null</code>. Supports navigation methods like <code>floor()</code>, <code>ceiling()</code>, <code>headSet()</code>. Use when you need a sorted unique collection.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">22</div>
+          <div class="q-text">What is the Java Memory Model — heap vs stack?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Stack:</strong> Stores local variables, method call frames, and primitive values. Each thread has its own stack. LIFO. Fast. Memory automatically reclaimed when method returns.<br><br>
+          <strong>Heap:</strong> Stores all objects and class instances. Shared across threads. Managed by Garbage Collector. Divided into Young Generation (Eden, Survivor), Old Generation, and Metaspace (class metadata).<br><br>
+          Object references are on the stack; the actual objects live on the heap. Large objects or those that survive GC cycles move to old generation.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">23</div>
+          <div class="q-text">What is the difference between static and instance methods?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Static methods:</strong> Belong to the class, not any instance. Called via <code>ClassName.method()</code>. Cannot access instance variables (<code>this</code> is unavailable). Useful for utility/helper methods (e.g., <code>Math.sqrt()</code>, <code>Collections.sort()</code>). Cannot be overridden (can be hidden).<br><br>
+          <strong>Instance methods:</strong> Belong to an object. Have access to <code>this</code> and all instance fields. Can be overridden. Require an object to call.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">24</div>
+          <div class="q-text">What is the difference between deep copy and shallow copy?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Shallow Copy:</strong> Creates a new object but copies references to the same nested objects. Changes to nested mutable objects in the copy affect the original. Achieved via <code>clone()</code> default or copy constructor copying references.<br><br>
+          <strong>Deep Copy:</strong> Creates a completely independent copy — all nested objects are also copied. Changes to the copy do NOT affect the original. Achieved via manual copying, serialization/deserialization, or copy constructors that recursively copy all nested objects.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">25</div>
+          <div class="q-text">What is the purpose of the 'super' keyword?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <code>super</code> refers to the parent class and serves three purposes:<br>
+          1. <strong>Call parent constructor:</strong> <code>super(args)</code> — must be the first line in a subclass constructor<br>
+          2. <strong>Access parent method:</strong> <code>super.methodName()</code> — call parent's overridden version<br>
+          3. <strong>Access parent field:</strong> <code>super.fieldName</code> — access hidden parent field (rare)<br><br>
+          Useful in inheritance hierarchies where you want to extend parent behavior rather than completely replace it.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">26</div>
+          <div class="q-text">What is the difference between List.of() and new ArrayList()?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong><code>List.of()</code> (Java 9+):</strong> Creates an <em>immutable</em> list. Any modification (add, remove, set) throws <code>UnsupportedOperationException</code>. Does NOT allow <code>null</code> elements. Highly memory-efficient. Use for constants and read-only data.<br><br>
+          <strong><code>new ArrayList()</code>:</strong> Creates a <em>mutable</em> list. Allows add, remove, set. Allows <code>null</code>. More memory overhead. Use when the list needs to change. <code>Arrays.asList()</code> is fixed-size (no add/remove) but allows set — a middle ground.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">27</div>
+          <div class="q-text">What is autoboxing and unboxing?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Autoboxing:</strong> Automatic conversion of primitive types to their wrapper objects: <code>int → Integer</code>, <code>double → Double</code>, etc. Happens when assigning primitives to collections or generic types.<br><br>
+          <strong>Unboxing:</strong> Automatic conversion of wrapper objects back to primitives: <code>Integer → int</code>. Can cause <code>NullPointerException</code> if the wrapper is <code>null</code>.<br><br>
+          Performance note: Excessive autoboxing in tight loops creates many short-lived objects and GC pressure. Use primitive arrays/streams when performance is critical.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">28</div>
+          <div class="q-text">What is the difference between PriorityQueue and TreeSet for ordering?</div>
+          <span class="q-difficulty diff-hard">Hard</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>PriorityQueue:</strong> Min-heap. Allows duplicates. Only peek/poll gives the smallest — internal order is NOT fully sorted. Iteration order is not sorted. O(log n) add/remove, O(1) peek.<br><br>
+          <strong>TreeSet:</strong> Red-Black Tree. No duplicates. Fully sorted at all times. Supports navigation methods (floor, ceiling, range queries). O(log n) all operations.<br><br>
+          Use PriorityQueue when you only care about getting the smallest/largest element repeatedly (like Dijkstra's). Use TreeSet when you need full sorted order, range queries, or need to check membership.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">29</div>
+          <div class="q-text">What is the difference between IS-A and HAS-A relationships?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>IS-A (Inheritance):</strong> A subtype relationship. <code>Dog extends Animal</code> means Dog IS-A Animal. Implemented via <code>extends</code> or <code>implements</code>. Creates tight coupling.<br><br>
+          <strong>HAS-A (Composition):</strong> A class contains an instance of another class as a field. <code>Car HAS-A Engine</code>. Implemented by holding a reference. Generally preferred over inheritance ("favor composition over inheritance") because it's more flexible, easier to test, and reduces tight coupling. Dependency injection leverages HAS-A.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">30</div>
+          <div class="q-text">What is the Collections utility class?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <code>java.util.Collections</code> is a utility class with only static methods for operating on collections:<br>
+          • <code>sort(list)</code>, <code>binarySearch(list, key)</code><br>
+          • <code>reverse(list)</code>, <code>shuffle(list)</code>, <code>rotate(list, dist)</code><br>
+          • <code>min(coll)</code>, <code>max(coll)</code>, <code>frequency(coll, o)</code><br>
+          • <code>unmodifiableList(list)</code> — wrapper that throws on modification<br>
+          • <code>synchronizedList(list)</code> — thread-safe wrapper<br>
+          • <code>nCopies(n, obj)</code> — immutable list of n copies<br>
+          • <code>singletonList(obj)</code> — immutable single-element list
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">31</div>
+          <div class="q-text">What is the covariant return type in Java?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          Since Java 5, a subclass can override a method and return a more specific (narrower/subtype) return type. This is covariant return. Example: if parent's <code>clone()</code> returns <code>Object</code>, the child can override and return <code>ChildClass</code>. This avoids explicit casting at the call site. The Builder pattern uses this — each method returns <code>this</code> (the concrete builder type) for method chaining.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">32</div>
+          <div class="q-text">What happens when you put a duplicate key in HashMap?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          The old value for that key is <strong>replaced</strong> by the new value. <code>put()</code> returns the old value if the key existed, or <code>null</code> if it was a new key. The size of the map remains the same. Use <code>putIfAbsent()</code> if you want to only insert when the key doesn't exist. Use <code>merge()</code> if you want to combine old and new values (e.g., for frequency counting).
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">33</div>
+          <div class="q-text">What is the difference between fail-fast and fail-safe iterators?</div>
+          <span class="q-difficulty diff-hard">Hard</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Fail-fast iterators:</strong> Throw <code>ConcurrentModificationException</code> immediately when the collection is structurally modified during iteration (uses a modCount check). Examples: <code>ArrayList</code>, <code>HashMap</code> iterators. They work on the original collection — no extra memory.<br><br>
+          <strong>Fail-safe iterators:</strong> Work on a clone/snapshot of the collection. No exception thrown on modification during iteration. Changes made during iteration may or may not be visible. Examples: <code>CopyOnWriteArrayList</code>, <code>ConcurrentHashMap</code>. Extra memory overhead from copying.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">34</div>
+          <div class="q-text">What is an inner class? Types of inner classes in Java?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          A class defined within another class. Four types:<br>
+          1. <strong>Non-static inner class:</strong> Has access to outer class instance members. Requires outer instance to create.<br>
+          2. <strong>Static nested class:</strong> No access to outer instance members. Can be created independently. Like a helper class scoped to the outer class.<br>
+          3. <strong>Local class:</strong> Defined inside a method. Scope limited to that method.<br>
+          4. <strong>Anonymous class:</strong> No name, defined and instantiated in one expression. Common for event listeners and one-off implementations before Java 8 lambdas.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">35</div>
+          <div class="q-text">What is the difference between Collection and Collections?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong><code>Collection</code> (interface):</strong> Root interface of the Java Collections Framework. Extended by <code>List</code>, <code>Set</code>, and <code>Queue</code>. Defines core methods like <code>add()</code>, <code>remove()</code>, <code>contains()</code>, <code>size()</code>, <code>iterator()</code>.<br><br>
+          <strong><code>Collections</code> (class):</strong> A utility class with only static methods for operating on collections — sorting, searching, reversing, shuffling, creating unmodifiable wrappers, etc. Similar to how <code>Arrays</code> is a utility class for arrays.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">36</div>
+          <div class="q-text">What is a record in Java (Java 16+)?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          A <code>record</code> is a special class for holding immutable data. It auto-generates: constructor, private final fields, getters, <code>equals()</code>, <code>hashCode()</code>, and <code>toString()</code>.<br><br>
+          <code>record Point(int x, int y) {}</code> is equivalent to a full immutable class with those 5 things manually written. Records are implicitly <code>final</code>, cannot extend other classes, and all fields are implicitly final. Ideal for DTOs, response objects, coordinates, and value types. Significantly reduces boilerplate.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">37</div>
+          <div class="q-text">How is a HashMap different from a LinkedHashMap?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>HashMap:</strong> No guaranteed iteration order. Slightly less memory (just the hash table). Best for pure key-value lookup when order doesn't matter.<br><br>
+          <strong>LinkedHashMap:</strong> Maintains a doubly-linked list alongside the hash table to preserve insertion order (or access order if configured). Slightly more memory and slightly slower than HashMap. Use when you need predictable iteration order or when building an LRU Cache (set <code>accessOrder=true</code> and override <code>removeEldestEntry()</code>).
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">38</div>
+          <div class="q-text">What is method hiding vs method overriding?</div>
+          <span class="q-difficulty diff-hard">Hard</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Method Overriding:</strong> An instance method in a subclass replaces the parent's method. Resolved at runtime via dynamic dispatch — calling through a parent reference calls the child's version.<br><br>
+          <strong>Method Hiding:</strong> When a subclass defines a <em>static</em> method with the same signature as a parent static method. Resolved at <em>compile time</em> based on the reference type — calling through a parent reference calls the parent's static method, calling through child calls child's. This is NOT polymorphism. Use <code>@Override</code> to verify — it won't compile on a static method that attempts override.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">39</div>
+          <div class="q-text">What is the diamond problem and how does Java solve it?</div>
+          <span class="q-difficulty diff-hard">Hard</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          The diamond problem occurs when class D inherits from B and C, both of which extend A. If B and C override the same A method, D doesn't know which to use.<br><br>
+          Java's solution: classes cannot extend multiple classes. But interfaces CAN have default methods, so a class implementing two interfaces with the same default method MUST override that method in the class itself. If an interface method and a class method conflict, the class wins. If both are interface defaults, explicit override required: <code>InterfaceName.super.method()</code> to choose one.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">40</div>
+          <div class="q-text">What is the difference between Enumeration and Iterator?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong>Enumeration (legacy):</strong> From Java 1.0. Works on legacy classes (<code>Vector</code>, <code>Hashtable</code>). Methods: <code>hasMoreElements()</code>, <code>nextElement()</code>. Cannot remove elements during iteration. Fail-safe.<br><br>
+          <strong>Iterator (modern):</strong> From Java 2. Works on all Collection classes. Methods: <code>hasNext()</code>, <code>next()</code>, <code>remove()</code>. Can safely remove elements during iteration. Fail-fast (throws CME on structural modification). Use Iterator in all modern code.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">41</div>
+          <div class="q-text">What are varargs in Java?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          Variable-length arguments (<code>type... name</code>): allows passing zero or more arguments of the same type. Internally treated as an array. Must be the last parameter. Only one vararg per method.<br><br>
+          <code>public int sum(int... nums) { int s=0; for(int n:nums) s+=n; return s; }</code><br>
+          <code>sum(1,2,3)</code>, <code>sum(1)</code>, <code>sum()</code> all valid.<br><br>
+          Used in: <code>System.out.printf(format, args...)</code>, <code>Arrays.asList(T... a)</code>, logging frameworks, and any flexible-argument utility methods.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">42</div>
+          <div class="q-text">What is the purpose of the Optional class?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <code>Optional&lt;T&gt;</code> (Java 8) is a container that may or may not hold a non-null value. It's a better alternative to returning <code>null</code>, forcing the caller to explicitly handle the absent case.<br><br>
+          Creation: <code>Optional.of(val)</code> (throws if null), <code>Optional.ofNullable(val)</code> (allows null), <code>Optional.empty()</code><br>
+          Usage: <code>opt.isPresent()</code>, <code>opt.get()</code>, <code>opt.orElse(default)</code>, <code>opt.orElseGet(supplier)</code>, <code>opt.ifPresent(consumer)</code>, <code>opt.map(fn)</code>, <code>opt.filter(pred)</code><br><br>
+          Best used for return types of methods that might not find a value. NOT recommended as method parameters or fields.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">43</div>
+          <div class="q-text">What is the difference between Iterable and Iterator?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong><code>Iterable&lt;T&gt;</code>:</strong> An interface indicating that a class can be iterated. Has one method: <code>Iterator&lt;T&gt; iterator()</code>. Classes implementing Iterable can be used in enhanced for-loops. The <code>Collection</code> interface extends Iterable.<br><br>
+          <strong><code>Iterator&lt;T&gt;</code>:</strong> The actual cursor/traversal mechanism. Has <code>hasNext()</code>, <code>next()</code>, <code>remove()</code>. Created fresh from <code>iterable.iterator()</code>. Stateful — tracks current position. One iterator per traversal.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">44</div>
+          <div class="q-text">What is a WeakHashMap?</div>
+          <span class="q-difficulty diff-hard">Hard</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <code>WeakHashMap</code> uses weak references for its keys. When a key is no longer strongly referenced by any other part of the program, the GC can collect it, and the corresponding entry is automatically removed from the map. Useful for memory-sensitive caches and implementing canonical mappings.<br><br>
+          Use case: Storing metadata about objects (like image thumbnails) where the entry should automatically disappear when the original object is garbage-collected — no manual cleanup needed. Not for general-purpose use due to unpredictable removal timing.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">45</div>
+          <div class="q-text">What is the difference between Runnable and Callable?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong><code>Runnable</code>:</strong> <code>void run()</code> — no return value, cannot throw checked exceptions. Used with <code>Thread</code> or <code>ExecutorService.execute()</code>.<br><br>
+          <strong><code>Callable&lt;V&gt;</code>:</strong> <code>V call() throws Exception</code> — returns a value, can throw checked exceptions. Used with <code>ExecutorService.submit()</code> which returns a <code>Future&lt;V&gt;</code> to retrieve the result later.<br><br>
+          Prefer <code>Callable</code> when you need the computation result or when the task might throw checked exceptions that you need to handle.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">46</div>
+          <div class="q-text">What is a marker interface? Examples?</div>
+          <span class="q-difficulty diff-easy">Easy</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          A marker interface has NO methods or fields — it's an empty interface that "marks" or tags a class to indicate it has a certain capability or property. The JVM or frameworks check for this using <code>instanceof</code>.<br><br>
+          Examples:<br>
+          • <code>Serializable</code> — JVM only serializes objects whose class implements this<br>
+          • <code>Cloneable</code> — enables <code>Object.clone()</code> without throwing <code>CloneNotSupportedException</code><br>
+          • <code>Remote</code> (RMI) — marks object as remotely accessible<br><br>
+          In modern Java, annotations like <code>@Entity</code>, <code>@Service</code> serve the same purpose more expressively.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">47</div>
+          <div class="q-text">What is type erasure in generics?</div>
+          <span class="q-difficulty diff-hard">Hard</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          At compile time, Java verifies generic type safety. At runtime, all generic type information is <strong>erased</strong> — <code>List&lt;String&gt;</code> becomes just <code>List</code> in bytecode. This maintains backward compatibility with pre-generic code.<br><br>
+          Consequences:<br>
+          • Cannot do <code>new T()</code> or <code>new T[]</code> inside generic code<br>
+          • <code>instanceof</code> cannot check generic types: <code>list instanceof List&lt;String&gt;</code> won't compile<br>
+          • Generic type info not available at runtime via reflection (without tricks)<br>
+          • Unchecked cast warnings when mixing raw types with generics<br><br>
+          Workaround: pass <code>Class&lt;T&gt;</code> as a token (reified type) to runtime methods.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">48</div>
+          <div class="q-text">What is the difference between Iterator's remove() and Collection's remove()?</div>
+          <span class="q-difficulty diff-med">Medium</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          <strong><code>Collection.remove(o)</code>:</strong> Called directly on the collection during iteration. This is a structural modification that increments the modCount, causing the iterator to throw <code>ConcurrentModificationException</code> on the next call.<br><br>
+          <strong><code>Iterator.remove()</code>:</strong> Removes the element most recently returned by <code>next()</code>. This is safe during iteration because the iterator updates its own internal state along with the collection's modCount. Must call <code>next()</code> before each <code>remove()</code> call.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">49</div>
+          <div class="q-text">How does the LRU Cache work in Java?</div>
+          <span class="q-difficulty diff-hard">Hard</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          LRU (Least Recently Used) Cache evicts the least recently accessed entry when full.<br><br>
+          <strong>Using LinkedHashMap (simplest):</strong> Pass <code>accessOrder=true</code> to maintain access order. Override <code>removeEldestEntry()</code> to evict when size exceeds capacity. O(1) all operations.<br><br>
+          <strong>Manual implementation:</strong> Use a <code>HashMap</code> (for O(1) get) + doubly-linked list (for O(1) move-to-front and eviction). On get: find node via map, move to front. On put: if exists update and move to front; if new add to front and map; if full evict tail and remove from map.
+        </div></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-header" onclick="toggleQ(this)">
+          <div class="q-num">50</div>
+          <div class="q-text">Which collection would you choose for each scenario?</div>
+          <span class="q-difficulty diff-hard">Hard</span>
+          <span class="q-chevron">▼</span>
+        </div>
+        <div class="q-body"><div class="q-answer">
+          • <strong>Frequent random access by index:</strong> <code>ArrayList</code><br>
+          • <strong>Frequent insert/delete at both ends:</strong> <code>ArrayDeque</code><br>
+          • <strong>LIFO stack:</strong> <code>ArrayDeque</code> (as stack)<br>
+          • <strong>FIFO queue:</strong> <code>ArrayDeque</code> or <code>LinkedList</code><br>
+          • <strong>Priority-based processing (min/max):</strong> <code>PriorityQueue</code><br>
+          • <strong>Fast key-value lookup, order unimportant:</strong> <code>HashMap</code><br>
+          • <strong>Key-value with insertion order:</strong> <code>LinkedHashMap</code><br>
+          • <strong>Key-value with sorted keys / range queries:</strong> <code>TreeMap</code><br>
+          • <strong>Unique elements, fast lookup:</strong> <code>HashSet</code><br>
+          • <strong>Unique elements, sorted order:</strong> <code>TreeSet</code><br>
+          • <strong>LRU Cache:</strong> <code>LinkedHashMap(cap, 0.75f, true)</code><br>
+          • <strong>Thread-safe map:</strong> <code>ConcurrentHashMap</code><br>
+          • <strong>Immutable list:</strong> <code>List.of()</code>
+        </div></div>
+      </div>
+
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+  // Tab switching
+  function switchTab(btn, paneId) {
+    const card = btn.closest('.card-body') || btn.closest('.concept-card');
+    const tabs  = btn.closest('.tabs');
+    tabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const parent = tabs.parentElement;
+    parent.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    const target = parent.querySelector('#' + paneId) || document.getElementById(paneId);
+    if (target) target.classList.add('active');
+  }
+
+  // Q accordion
+  function toggleQ(header) {
+    const item = header.closest('.q-item');
+    item.classList.toggle('open');
+  }
+
+  // Active nav on scroll
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const match = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  // Search filter
+  document.getElementById('searchInput').addEventListener('input', function () {
+    const val = this.value.toLowerCase();
+    document.querySelectorAll('.concept-card, .q-item').forEach(el => {
+      el.style.display = el.textContent.toLowerCase().includes(val) ? '' : 'none';
+    });
+  });
+
+  // Open all questions that match search
+  document.querySelectorAll('.q-header').forEach(h => {
+    h.addEventListener('click', () => toggleQ(h));
+  });
+</script>
+</body>
+</html>
